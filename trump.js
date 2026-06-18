@@ -5,6 +5,7 @@
 // ── WORD BANKS ──────────────────────────────────────────────────────────────
 
 const enemies = [
+  // From speeches
   "Sleepy Joe", "Crooked Hillary", "Shifty Schiff", "Crazy Nancy",
   "Fake News CNN", "the Radical Left", "the Deep State",
   "the Lamestream Media", "Soros", "the Democrats",
@@ -12,7 +13,15 @@ const enemies = [
   "Little Marco", "the Globalists", "the Communist Left",
   "the Mainstream Media", "the Radical Democrats", "the Fake News",
   "the Do-Nothing Democrats", "Pocahontas", "Crazy Maxine",
-  "the Squad", "the Rigged System", "the Corrupt Media"
+  "the Squad", "the Rigged System", "the Corrupt Media",
+  // From 54,000 tweets
+  "Crooked Hillary Clinton", "Sleepy Joe Biden", "Crazy Bernie Sanders",
+  "Crazy Nancy Pelosi", "Goofy Elizabeth Warren", "Lyin' Ted Cruz",
+  "Corrupt Joe Biden", "Corrupt Adam Schiff", "Crazy Bernie",
+  "the Fake News Media", "Dummy Bill Maher", "the Failing Washington Post",
+  "the Disgusting New York Times", "the Degenerate Media",
+  "the Do Nothing Democrats", "the Radical Left Dems",
+  "the Lamestream Fake News", "James Comey", "Crooked Obama"
 ];
 
 const superlatives = [
@@ -42,7 +51,15 @@ const topics = [
   "nuclear weapons", "the ratings", "crowd sizes",
   "Obamacare", "the national debt", "taxes", "the police",
   "our great country", "immigration", "education", "the media",
-  "foreign policy", "law and order", "the military generals"
+  "foreign policy", "law and order", "the military generals",
+  // From tweet corpus
+  "the witch hunt", "collusion", "the impeachment hoax",
+  "the radical left", "illegal immigration", "voter fraud",
+  "the mainstream media", "the Second Amendment", "Antifa",
+  "the border wall", "Obamagate", "the rigged election",
+  "election fraud", "the stolen election", "the fake dossier",
+  "defunding the police", "sanctuary cities", "the deep state",
+  "drain the swamp", "currency manipulation"
 ];
 
 const nouns = [
@@ -186,6 +203,28 @@ const templates = [
   "Our country is in deep trouble. We don't know what we're doing. We will know what we're doing very soon.",
   "They're leaving. They're all leaving. {countries}, {countries}, everyone's taking advantage. Not for much longer.",
 
+  // ── Tweet-style (from 54,000 real posts) ──
+  "{countries} is playing big currency manipulation games and pumping money into their system to beat us. We should MATCH them, and WIN!",
+  "The world is laughing at us because of {enemy}. Not for much longer. Watch.",
+  "{countries} continues to move militarily and economically. Our leadership does nothing. So sad!",
+  "{enemy} said it was impossible. We did it anyway. Easily. As usual.",
+  "James Comey is a proven LEAKER and LIAR. Almost everyone knew it. Finally the truth comes out!",
+  "Despite what you have heard from {enemy}, the real numbers are incredible. The best ever. Believe me.",
+  "The Corrupt Media refuses to cover this! They never will. That's why we go direct to the people.",
+  "Just a continuation of the Witch Hunt! They've been doing it for years. YEARS. And failing.",
+  "Our country is now in serious and unprecedented trouble. Like never before. I alone can fix it.",
+  "The failing {enemy} made up another story. Totally false. I'm used to it — they're very dishonest.",
+  "A sad day for America. The world is laughing at us. Our leadership is WEAK and totally ineffective.",
+  "The Do Nothing Dems have gone Radical Left Crazy. They can't get anything done!",
+  "Despite my tremendous success, they never give me credit. Never. The fake news is truly the enemy of the people.",
+  "It would be really nice if {enemy} would report the facts for once. Just once. Probably won't happen.",
+  "The Wall is going up very fast despite total Obstruction by {enemy} in Congress. Beautiful!",
+  "{countries} has been laughing at us for years. They're not laughing anymore. Trust me.",
+  "They said it couldn't be done. I said watch me. Now everyone agrees it's {superlative}.",
+  "The degenerate {enemy} made up the whole story. Never happened. WITCH HUNT!",
+  "Radical Islamic Terrorism must be stopped by whatever means necessary! Have to be tough!",
+  "Such a great honor to be with {group} today. The love in the room was incredible. Tears. Big strong people with tears.",
+
   // ── Closing zingers ──
   "Our politicians are stupid. {enemy} is stupid. Frankly, many of them are very, very stupid. I'm not stupid.",
   "You know what that is? That's called {topic}. And we're going to win at it.",
@@ -238,6 +277,22 @@ const closers = [
   "It won't happen. I guarantee it.",
   "People don't want to talk about it, but it's true.",
   "Nobody talks about it. I'm the only one talking about it.",
+  // From 54,000 tweets
+  "MAKE AMERICA GREAT AGAIN!",
+  "No Collusion!",
+  "Drain the Swamp!",
+  "America First!",
+  "Wrong!",
+  "KEEP AMERICA GREAT!",
+  "So true.",
+  "Just a continuation of the Witch Hunt!",
+  "The Corrupt Media refuses to cover this!",
+  "The world is watching.",
+  "God Bless America!",
+  "We will never stop fighting.",
+  "Disgraceful!",
+  "Pathetic!",
+  "Total disaster.",
 ];
 
 function generateQuote() {
