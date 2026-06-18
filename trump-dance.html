@@ -12,288 +12,314 @@
     justify-content: center;
     height: 100vh;
     font-family: Arial, sans-serif;
+    overflow: hidden;
   }
   canvas { display: block; }
   #label {
     color: #FFD700;
-    font-size: 22px;
+    font-size: 20px;
     font-weight: bold;
-    letter-spacing: 4px;
-    margin-top: 10px;
-    min-height: 30px;
+    letter-spacing: 6px;
+    margin-top: 8px;
+    min-height: 28px;
+    text-shadow: 0 0 10px rgba(255,215,0,0.5);
   }
 </style>
 </head>
 <body>
-<canvas id="c" width="420" height="480"></canvas>
-<div id="label">Y·M·C·A</div>
+<canvas id="c" width="420" height="490"></canvas>
+<div id="label">Y · M · C · A</div>
 
 <script>
 const canvas = document.getElementById('c');
 const ctx = canvas.getContext('2d');
 const label = document.getElementById('label');
 
-const CX = 210, CY = 220; // center of figure
-
+// Figure origin — body bobs up/down
+const BASE_CX = 210, BASE_CY = 230;
 let frame = 0;
+
+// ── YMCA pose cycle (slower, ~90 frames each) ────────────────────────────────
 const POSES = ['Y','M','C','A'];
 let poseIdx = 0;
-const POSE_FRAMES = 72; // frames per pose (~1.2s at 60fps)
+const POSE_FRAMES = 90;
 
-// ── Arm endpoint definitions per pose ──────────────────────────────────────
-// Each pose: { la: [shoulder→elbow, elbow→hand], ra: [...] }
-// coords relative to CX, CY (torso center)
+// ── Arm segment definitions ──────────────────────────────────────────────────
+// Each pose: upper-arm-end (elbow) and forearm-end (hand), relative to shoulder.
+// Shoulders are at approx (±46, 0) relative to figure center.
+// KEY: elbows stay LOW and tucked. Forearms do the work.
+
 const poseArms = {
+  //  [ [shoulder_offset], [elbow_offset_from_shoulder], [hand_offset_from_elbow] ]
   Y: {
-    la: [[-45, 10], [-115, -75]],   // left arm sweeping up-left
-    ra: [[ 45, 10], [ 115, -75]],   // right arm sweeping up-right
+    // Elbows tucked at sides, forearms angled upward-outward (slight spread)
+    la: { elbow: [-10, 40], hand: [-35, -30] },
+    ra: { elbow: [ 10, 40], hand: [  35, -30] },
   },
   M: {
-    // M shape: both arms bent up, hands pointing toward center above head
-    la: [[-45, 10], [-90, -55], [-55, -115]],
-    ra: [[ 45, 10], [ 90, -55], [ 55, -115]],
+    // Elbows low, both forearms pump up close to chest — the signature move
+    la: { elbow: [-8,  38], hand: [-20, -55] },
+    ra: { elbow: [  8, 38], hand: [  20, -55] },
   },
   C: {
-    // C shape: left arm up-left, right arm curls down-left
-    la: [[-45, 10], [-110, -50]],
-    ra: [[ 45, 10], [  20, -80]],
+    // Right forearm sweeps out to side, left stays low — asymmetric pump
+    la: { elbow: [-10, 45], hand: [-15, 10] },
+    ra: { elbow: [  5, 35], hand: [  70, -10] },
   },
   A: {
-    // A shape: both arms meet at a peak above center
-    la: [[-45, 10], [-10, -105]],
-    ra: [[ 45, 10], [ 10, -105]],
+    // Both hands raised a bit higher, elbows still fairly low — triumphant pump
+    la: { elbow: [-12, 42], hand: [-30, -65] },
+    ra: { elbow: [  12, 42], hand: [  30, -65] },
   },
 };
 
-// ── Lerp between poses ──────────────────────────────────────────────────────
-function lerp(a, b, t) { return a + (b - a) * t; }
-function lerpPts(a, b, t) {
-  const len = Math.min(a.length, b.length);
-  return Array.from({length: len}, (_, i) => [
-    lerp(a[i][0], b[i][0], t),
-    lerp(a[i][1], b[i][1], t),
-  ]);
-}
+// ── Easing ───────────────────────────────────────────────────────────────────
+function easeInOut(t) { return t < 0.5 ? 2*t*t : -1+(4-2*t)*t; }
+function lerp(a, b, t) { return a + (b-a)*t; }
+function lerp2(a, b, t) { return [lerp(a[0], b[0], t), lerp(a[1], b[1], t)]; }
 
-function getPoseArms(t) {
+function currentArms() {
   const cur  = POSES[poseIdx];
-  const next = POSES[(poseIdx + 1) % 4];
-  const ease = t < 0.5 ? 2*t*t : -1+(4-2*t)*t; // ease in-out
-  const la = lerpPts(poseArms[cur].la, poseArms[next].la, ease);
-  const ra = lerpPts(poseArms[cur].ra, poseArms[next].ra, ease);
-  return { la, ra };
+  const next = POSES[(poseIdx+1) % 4];
+  const raw  = (frame % POSE_FRAMES) / POSE_FRAMES;
+  // Only interpolate in the last 25% of the pose (snap, hold, snap)
+  const t    = raw < 0.75 ? 0 : easeInOut((raw - 0.75) / 0.25);
+  return {
+    la: {
+      elbow: lerp2(poseArms[cur].la.elbow, poseArms[next].la.elbow, t),
+      hand:  lerp2(poseArms[cur].la.hand,  poseArms[next].la.hand,  t),
+    },
+    ra: {
+      elbow: lerp2(poseArms[cur].ra.elbow, poseArms[next].ra.elbow, t),
+      hand:  lerp2(poseArms[cur].ra.hand,  poseArms[next].ra.hand,  t),
+    },
+  };
 }
 
-// ── Drawing helpers ─────────────────────────────────────────────────────────
-function drawChain(points, sw, color) {
-  if (points.length < 2) return;
-  ctx.save();
-  ctx.strokeStyle = color;
-  ctx.lineWidth = sw;
-  ctx.lineCap = 'round';
-  ctx.lineJoin = 'round';
-  ctx.beginPath();
-  ctx.moveTo(CX + points[0][0], CY + points[0][1]);
-  for (let i = 1; i < points.length; i++)
-    ctx.lineTo(CX + points[i][0], CY + points[i][1]);
-  ctx.stroke();
-  ctx.restore();
-}
-
+// ── Drawing helpers ───────────────────────────────────────────────────────────
 function oval(x, y, rx, ry, color, rot=0) {
-  ctx.save();
-  ctx.fillStyle = color;
-  ctx.beginPath();
-  ctx.ellipse(x, y, rx, ry, rot, 0, Math.PI*2);
+  ctx.save(); ctx.fillStyle = color;
+  ctx.beginPath(); ctx.ellipse(x, y, rx, ry, rot, 0, Math.PI*2);
+  ctx.fill(); ctx.restore();
+}
+
+function drawHand(x, y, isRight, color) {
+  // Simple palm + stubby fingers
+  ctx.save(); ctx.fillStyle = color;
+  ctx.beginPath(); ctx.ellipse(x, y, 13, 10, isRight ? 0.3 : -0.3, 0, Math.PI*2);
   ctx.fill();
+  // Two knuckle bumps
+  for (let i = -1; i <= 1; i += 2) {
+    ctx.beginPath(); ctx.ellipse(x + i*6, y - 9, 4, 4, 0, 0, Math.PI*2); ctx.fill();
+  }
   ctx.restore();
 }
 
-function drawTrump(mouthOpen) {
-  const t = (frame % POSE_FRAMES) / POSE_FRAMES;
-  const { la, ra } = getPoseArms(t);
+// ── Main draw ─────────────────────────────────────────────────────────────────
+function drawTrump(mouthOpen, bobY, leanX) {
+  const CX = BASE_CX + leanX;
+  const CY = BASE_CY + bobY;
 
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-  // ── Shadow ──
+  // Ground shadow
+  ctx.save(); ctx.globalAlpha = 0.2;
+  oval(BASE_CX, BASE_CY + 200, 65, 12, '#000');
+  ctx.restore();
+
+  // ── Legs (slight weight-shift) ───────────────────────────────────────────
+  const legRock = Math.sin(frame * 0.08) * 10;
   ctx.save();
-  ctx.globalAlpha = 0.25;
-  oval(CX, CY + 185, 70, 14, '#000');
+  ctx.strokeStyle = '#1a1e38'; ctx.lineWidth = 30; ctx.lineCap = 'round';
+  // Left leg
+  ctx.beginPath();
+  ctx.moveTo(CX-22, CY+100);
+  ctx.quadraticCurveTo(CX-28+legRock*0.5, CY+155, CX-24+legRock, CY+195);
+  ctx.stroke();
+  // Right leg
+  ctx.beginPath();
+  ctx.moveTo(CX+22, CY+100);
+  ctx.quadraticCurveTo(CX+28-legRock*0.5, CY+155, CX+24-legRock, CY+195);
+  ctx.stroke();
   ctx.restore();
-
-  // ── Legs ──
-  const legSwing = Math.sin(frame * 0.12) * 8;
-  ctx.save(); ctx.strokeStyle = '#222'; ctx.lineWidth = 28; ctx.lineCap = 'round';
-  ctx.beginPath(); ctx.moveTo(CX-22, CY+100); ctx.lineTo(CX-28+legSwing, CY+185); ctx.stroke();
-  ctx.beginPath(); ctx.moveTo(CX+22, CY+100); ctx.lineTo(CX+28-legSwing, CY+185); ctx.stroke();
   // Shoes
-  oval(CX-28+legSwing, CY+190, 22, 9, '#111');
-  oval(CX+28-legSwing, CY+190, 22, 9, '#111');
-  ctx.restore();
+  oval(CX-24+legRock,  CY+198, 22, 8, '#111');
+  oval(CX+24-legRock,  CY+198, 22, 8, '#111');
 
-  // ── Torso (suit) ──
+  // ── Suit body ────────────────────────────────────────────────────────────
   ctx.save();
   ctx.fillStyle = '#1c2340';
-  ctx.beginPath();
-  ctx.roundRect(CX-62, CY-30, 124, 135, 8);
-  ctx.fill();
+  ctx.beginPath(); ctx.roundRect(CX-60, CY-28, 120, 132, 7); ctx.fill();
   // Lapels
   ctx.fillStyle = '#253060';
   ctx.beginPath();
-  ctx.moveTo(CX-62, CY-30); ctx.lineTo(CX-15, CY-30); ctx.lineTo(CX, CY+10); ctx.lineTo(CX-62, CY+40); ctx.closePath();
-  ctx.fill();
+  ctx.moveTo(CX-60, CY-28); ctx.lineTo(CX-14, CY-28);
+  ctx.lineTo(CX, CY+15); ctx.lineTo(CX-60, CY+45); ctx.closePath(); ctx.fill();
   ctx.beginPath();
-  ctx.moveTo(CX+62, CY-30); ctx.lineTo(CX+15, CY-30); ctx.lineTo(CX, CY+10); ctx.lineTo(CX+62, CY+40); ctx.closePath();
-  ctx.fill();
-  // White shirt
-  ctx.fillStyle = '#f0f0f0';
+  ctx.moveTo(CX+60, CY-28); ctx.lineTo(CX+14, CY-28);
+  ctx.lineTo(CX, CY+15); ctx.lineTo(CX+60, CY+45); ctx.closePath(); ctx.fill();
+  // Shirt strip
+  ctx.fillStyle = '#efefef';
   ctx.beginPath();
-  ctx.moveTo(CX-12, CY-30); ctx.lineTo(CX+12, CY-30); ctx.lineTo(CX+8, CY+105); ctx.lineTo(CX-8, CY+105);
-  ctx.fill();
+  ctx.moveTo(CX-11, CY-28); ctx.lineTo(CX+11, CY-28);
+  ctx.lineTo(CX+7, CY+104); ctx.lineTo(CX-7, CY+104); ctx.fill();
   ctx.restore();
 
-  // ── Tie (long, red) ──
+  // ── Tie (sways with body lean) ───────────────────────────────────────────
+  const tieSway = leanX * 0.4 + Math.sin(frame * 0.09) * 4;
   ctx.save();
-  const tieSway = Math.sin(frame * 0.10) * 6;
   ctx.fillStyle = '#cc0000';
   ctx.beginPath();
-  ctx.moveTo(CX-9, CY-28); ctx.lineTo(CX+9, CY-28);
-  ctx.lineTo(CX+14+tieSway, CY+125);
-  ctx.lineTo(CX+tieSway, CY+138);
-  ctx.lineTo(CX-14+tieSway, CY+125);
-  ctx.closePath();
-  ctx.fill();
-  // Tie highlight stripe
-  ctx.strokeStyle = '#ff3333';
-  ctx.lineWidth = 2; ctx.globalAlpha = 0.4;
+  ctx.moveTo(CX-9, CY-26); ctx.lineTo(CX+9, CY-26);
+  ctx.lineTo(CX+16+tieSway, CY+125);
+  ctx.lineTo(CX+2+tieSway,  CY+138);
+  ctx.lineTo(CX-16+tieSway, CY+125);
+  ctx.closePath(); ctx.fill();
+  // Tie shine
+  ctx.strokeStyle = 'rgba(255,80,80,0.35)'; ctx.lineWidth = 2;
   ctx.beginPath();
-  ctx.moveTo(CX+2, CY-20); ctx.lineTo(CX+10+tieSway*0.7, CY+120);
-  ctx.stroke();
+  ctx.moveTo(CX+1, CY-18); ctx.lineTo(CX+10+tieSway*0.6, CY+118); ctx.stroke();
   ctx.restore();
 
-  // ── Arms ──
-  drawChain(la, 24, '#1c2340');
-  drawChain(ra, 24, '#1c2340');
+  // ── Arms ─────────────────────────────────────────────────────────────────
+  const arms = currentArms();
+  const LSX = CX - 46, LSY = CY + 5;  // left shoulder
+  const RSX = CX + 46, RSY = CY + 5;  // right shoulder
+
+  const LEX = LSX + arms.la.elbow[0], LEY = LSY + arms.la.elbow[1];
+  const LHX = LEX + arms.la.hand[0],  LHY = LEY + arms.la.hand[1];
+  const REX = RSX + arms.ra.elbow[0], REY = RSY + arms.ra.elbow[1];
+  const RHX = REX + arms.ra.hand[0],  RHY = REY + arms.ra.hand[1];
+
+  // Upper arms
+  ctx.save(); ctx.strokeStyle = '#1c2340'; ctx.lineWidth = 26; ctx.lineCap = 'round';
+  ctx.beginPath(); ctx.moveTo(LSX, LSY); ctx.lineTo(LEX, LEY); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(RSX, RSY); ctx.lineTo(REX, REY); ctx.stroke();
+  // Forearms
+  ctx.lineWidth = 22;
+  ctx.beginPath(); ctx.moveTo(LEX, LEY); ctx.lineTo(LHX, LHY); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(REX, REY); ctx.lineTo(RHX, RHY); ctx.stroke();
+  ctx.restore();
+
   // Hands
-  oval(CX + la[la.length-1][0], CY + la[la.length-1][1], 13, 13, '#F4A060');
-  oval(CX + ra[ra.length-1][0], CY + ra[ra.length-1][1], 13, 13, '#F4A060');
+  drawHand(LHX, LHY, false, '#F4A060');
+  drawHand(RHX, RHY, true,  '#F4A060');
 
-  // ── Neck ──
+  // ── Neck ─────────────────────────────────────────────────────────────────
   ctx.fillStyle = '#F4A060';
-  ctx.fillRect(CX-18, CY-68, 36, 42);
+  ctx.fillRect(CX-17, CY-68, 34, 44);
 
-  // ── Face ──
-  // Base face (orange)
-  oval(CX, CY-115, 68, 80, '#F4A060');
-  // White eye area (classic Trump look)
-  oval(CX-22, CY-122, 18, 12, 'rgba(255,255,230,0.55)');
-  oval(CX+22, CY-122, 18, 12, 'rgba(255,255,230,0.55)');
+  // ── Face ─────────────────────────────────────────────────────────────────
+  // Base
+  oval(CX, CY-115, 67, 80, '#F4A060');
+  // Pale eye zone (characteristic)
+  oval(CX-21, CY-122, 19, 13, 'rgba(255,250,220,0.5)');
+  oval(CX+21, CY-122, 19, 13, 'rgba(255,250,220,0.5)');
 
-  // ── Hair ──
-  // Main golden swoop
+  // ── Hair ─────────────────────────────────────────────────────────────────
   ctx.save();
-  ctx.fillStyle = '#E8C840';
-  ctx.beginPath();
-  ctx.ellipse(CX+5, CY-185, 62, 28, -0.1, 0, Math.PI*2);
-  ctx.fill();
-  // Side sweep right
-  ctx.beginPath();
-  ctx.ellipse(CX+52, CY-158, 22, 42, 0.6, 0, Math.PI*2);
-  ctx.fill();
-  // Left side puff
-  ctx.beginPath();
-  ctx.ellipse(CX-48, CY-148, 24, 42, -0.5, 0, Math.PI*2);
-  ctx.fill();
-  // Swirl on top
+  // Main golden mound
   ctx.fillStyle = '#D4B030';
-  ctx.beginPath();
-  ctx.ellipse(CX+10, CY-178, 40, 14, 0.3, 0, Math.PI*2);
-  ctx.fill();
+  ctx.beginPath(); ctx.ellipse(CX+4, CY-186, 64, 30, -0.05, 0, Math.PI*2); ctx.fill();
+  ctx.fillStyle = '#E8C840';
+  ctx.beginPath(); ctx.ellipse(CX+8, CY-184, 56, 24, -0.05, 0, Math.PI*2); ctx.fill();
+  // Right side puff
+  ctx.fillStyle = '#D4B030';
+  ctx.beginPath(); ctx.ellipse(CX+52, CY-158, 20, 44, 0.65, 0, Math.PI*2); ctx.fill();
+  ctx.fillStyle = '#E8C840';
+  ctx.beginPath(); ctx.ellipse(CX+48, CY-158, 14, 36, 0.65, 0, Math.PI*2); ctx.fill();
+  // Left side
+  ctx.fillStyle = '#D4B030';
+  ctx.beginPath(); ctx.ellipse(CX-48, CY-148, 22, 46, -0.55, 0, Math.PI*2); ctx.fill();
   ctx.restore();
 
-  // ── Eyebrows (low, furrowed) ──
-  ctx.save();
-  ctx.strokeStyle = '#7a5c30';
-  ctx.lineWidth = 5; ctx.lineCap = 'round';
-  ctx.beginPath(); ctx.moveTo(CX-36, CY-132); ctx.lineTo(CX-10, CY-127); ctx.stroke();
-  ctx.beginPath(); ctx.moveTo(CX+10, CY-127); ctx.lineTo(CX+36, CY-132); ctx.stroke();
+  // ── Eyebrows (low, slightly angry) ───────────────────────────────────────
+  ctx.save(); ctx.strokeStyle = '#7a5c20'; ctx.lineWidth = 5; ctx.lineCap = 'round';
+  ctx.beginPath(); ctx.moveTo(CX-37, CY-134); ctx.lineTo(CX-9, CY-128); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(CX+9,  CY-128); ctx.lineTo(CX+37, CY-134); ctx.stroke();
   ctx.restore();
 
-  // ── Eyes ──
-  oval(CX-22, CY-120, 10, 8, '#3a2a18');
-  oval(CX+22, CY-120, 10, 8, '#3a2a18');
-  // pupils
-  oval(CX-21, CY-121, 5, 5, '#111');
-  oval(CX+21, CY-121, 5, 5, '#111');
-  // catchlights
-  oval(CX-19, CY-123, 2, 2, 'white');
-  oval(CX+19, CY-123, 2, 2, 'white');
+  // ── Eyes ─────────────────────────────────────────────────────────────────
+  oval(CX-22, CY-121, 10, 8, '#3a2818');
+  oval(CX+22, CY-121, 10, 8, '#3a2818');
+  oval(CX-21, CY-122,  5, 5, '#111');
+  oval(CX+21, CY-122,  5, 5, '#111');
+  oval(CX-19, CY-124,  2, 2, 'white');
+  oval(CX+19, CY-124,  2, 2, 'white');
 
-  // ── Nose ──
-  ctx.save();
-  ctx.strokeStyle = '#c87840';
-  ctx.lineWidth = 3; ctx.lineCap = 'round';
+  // ── Nose ─────────────────────────────────────────────────────────────────
+  ctx.save(); ctx.strokeStyle = '#c87840'; ctx.lineWidth = 3; ctx.lineCap = 'round';
   ctx.beginPath();
   ctx.moveTo(CX-2, CY-108);
-  ctx.quadraticCurveTo(CX+14, CY-96, CX+10, CY-84);
-  ctx.quadraticCurveTo(CX, CY-80, CX-10, CY-84);
-  ctx.stroke();
-  ctx.restore();
+  ctx.quadraticCurveTo(CX+13, CY-95, CX+9, CY-83);
+  ctx.quadraticCurveTo(CX, CY-79, CX-9, CY-83);
+  ctx.stroke(); ctx.restore();
 
-  // ── Mouth ──
-  const mouthW = 26;
-  const mouthH = mouthOpen * 28;
-  const mY = CY - 72;
+  // ── Mouth ─────────────────────────────────────────────────────────────────
+  const mW  = 28;
+  const mH  = mouthOpen * 30;
+  const mY0 = CY - 70;
 
+  // Cavity
   ctx.save();
-  // Mouth cavity
-  ctx.fillStyle = '#5a1010';
+  ctx.fillStyle = '#4a0808';
   ctx.beginPath();
-  ctx.ellipse(CX, mY + mouthH/2, mouthW, Math.max(2, mouthH/2 + 3), 0, 0, Math.PI*2);
+  ctx.ellipse(CX, mY0 + mH*0.5, mW, Math.max(3, mH*0.55 + 3), 0, 0, Math.PI*2);
   ctx.fill();
 
-  // Teeth (upper row, visible when open)
-  if (mouthOpen > 0.25) {
-    ctx.fillStyle = '#f5f0e0';
-    ctx.fillRect(CX - mouthW + 4, mY - 3, (mouthW-4)*2, Math.min(mouthH * 0.45, 12));
+  // Teeth (upper)
+  if (mouthOpen > 0.2) {
+    ctx.fillStyle = '#f0ece0';
+    ctx.beginPath();
+    ctx.roundRect(CX - mW + 4, mY0 - 2, (mW-4)*2, Math.min(mH * 0.4, 13), 2);
+    ctx.fill();
+    // Tooth dividers
+    ctx.strokeStyle = '#ddd8c8'; ctx.lineWidth = 1;
+    for (let i = -1; i <= 1; i++) {
+      ctx.beginPath();
+      ctx.moveTo(CX + i*9, mY0 - 1);
+      ctx.lineTo(CX + i*9, mY0 + Math.min(mH*0.4, 12));
+      ctx.stroke();
+    }
   }
 
   // Upper lip
-  ctx.fillStyle = '#c07060';
+  ctx.fillStyle = '#b06858';
   ctx.beginPath();
-  ctx.moveTo(CX - mouthW, mY);
-  ctx.quadraticCurveTo(CX - 10, mY - 7, CX, mY - 4);
-  ctx.quadraticCurveTo(CX + 10, mY - 7, CX + mouthW, mY);
-  ctx.lineTo(CX + mouthW - 4, mY + 4);
-  ctx.quadraticCurveTo(CX, mY + 2, CX - mouthW + 4, mY + 4);
-  ctx.closePath();
-  ctx.fill();
+  ctx.moveTo(CX-mW, mY0);
+  ctx.quadraticCurveTo(CX-10, mY0-8, CX, mY0-4);
+  ctx.quadraticCurveTo(CX+10, mY0-8, CX+mW, mY0);
+  ctx.lineTo(CX+mW-5, mY0+5);
+  ctx.quadraticCurveTo(CX, mY0+3, CX-mW+5, mY0+5);
+  ctx.closePath(); ctx.fill();
 
   // Lower lip
-  ctx.fillStyle = '#b86050';
+  ctx.fillStyle = '#a05848';
   ctx.beginPath();
-  ctx.ellipse(CX, mY + mouthH + 4, mouthW - 6, 8, 0, 0, Math.PI);
+  ctx.ellipse(CX, mY0 + mH + 5, mW-4, 9, 0, 0, Math.PI);
   ctx.fill();
   ctx.restore();
 
-  // ── Pose label ──
-  const curPose  = POSES[poseIdx];
-  label.textContent = POSES.map((p,i) => i === poseIdx ? `[${p}]` : p).join('  ·  ');
+  // ── Pose label ────────────────────────────────────────────────────────────
+  label.textContent = POSES.map((p, i) => i === poseIdx ? `[${p}]` : p).join('  ·  ');
 }
 
-// ── Animation loop ───────────────────────────────────────────────────────────
+// ── Animation loop ────────────────────────────────────────────────────────────
 function animate() {
   frame++;
+  if (frame % POSE_FRAMES === 0) poseIdx = (poseIdx + 1) % 4;
 
-  // Advance pose every POSE_FRAMES frames
-  if (frame % POSE_FRAMES === 0) {
-    poseIdx = (poseIdx + 1) % 4;
-  }
+  // Body bob: up and down, 2 bobs per pose
+  const bobY = Math.sin(frame * 0.14) * 8;
 
-  // Mouth: sine wave, ~3 open/close cycles per pose
-  const mouthOpen = Math.max(0, Math.sin(frame * 0.22)) ** 0.7;
+  // Slight left-right lean with the music
+  const leanX = Math.sin(frame * 0.07) * 5;
 
-  drawTrump(mouthOpen);
+  // Mouth: wide open-close on a fast sine, exaggerated
+  const raw = Math.sin(frame * 0.20);
+  const mouthOpen = raw > 0 ? Math.pow(raw, 0.6) : 0;
+
+  drawTrump(mouthOpen, bobY, leanX);
   requestAnimationFrame(animate);
 }
 
