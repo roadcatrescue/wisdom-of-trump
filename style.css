@@ -1,0 +1,283 @@
+/* Trump Oracle — Deliberately Gaudy American Design */
+
+:root {
+  --red: #B22234;
+  --dark-red: #8B0000;
+  --blue: #3C3B6E;
+  --gold: #C9A84C;
+  --bright-gold: #FFD700;
+  --cream: #FFF8F0;
+  --text: #1a1a1a;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background-color: #0a0a1a;
+  background-image:
+    repeating-linear-gradient(
+      45deg,
+      rgba(60, 59, 110, 0.08) 0px,
+      rgba(60, 59, 110, 0.08) 1px,
+      transparent 1px,
+      transparent 60px
+    );
+  font-family: 'Georgia', 'Times New Roman', serif;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.page {
+  max-width: 780px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 32px;
+}
+
+/* ── HEADER ── */
+header {
+  text-align: center;
+  padding: 40px 20px 30px;
+  border: 3px solid var(--gold);
+  border-radius: 8px;
+  background: linear-gradient(160deg, var(--blue) 0%, #1a1940 100%);
+  width: 100%;
+  position: relative;
+  overflow: hidden;
+}
+
+header::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 6px;
+  background: repeating-linear-gradient(
+    90deg,
+    var(--red) 0px, var(--red) 33.33%,
+    white 33.33%, white 66.66%,
+    var(--blue) 66.66%, var(--blue) 100%
+  );
+}
+
+.eagle {
+  font-size: 3rem;
+  line-height: 1;
+  margin-bottom: 12px;
+  filter: drop-shadow(0 0 12px rgba(255, 215, 0, 0.5));
+}
+
+h1 {
+  font-size: clamp(2.2rem, 8vw, 4rem);
+  font-weight: 900;
+  color: var(--bright-gold);
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  text-shadow:
+    2px 2px 0 var(--dark-red),
+    4px 4px 0 rgba(0,0,0,0.4);
+  font-family: 'Arial Black', 'Impact', sans-serif;
+  margin-bottom: 8px;
+}
+
+.tagline {
+  font-size: 1.1rem;
+  color: var(--gold);
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  margin-bottom: 14px;
+  font-family: Arial, sans-serif;
+}
+
+.sub-tagline {
+  font-size: 0.9rem;
+  color: rgba(255,255,255,0.6);
+  font-style: italic;
+  max-width: 440px;
+  margin: 0 auto;
+  line-height: 1.5;
+}
+
+/* ── QUOTE BOX ── */
+.quote-box {
+  background: var(--cream);
+  border: 3px solid var(--gold);
+  border-radius: 6px;
+  padding: 40px 48px;
+  width: 100%;
+  position: relative;
+  box-shadow:
+    0 0 0 1px rgba(201, 168, 76, 0.3),
+    0 8px 40px rgba(0,0,0,0.5);
+  min-height: 180px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  transition: opacity 0.2s ease;
+}
+
+.quote-box.fade-out {
+  opacity: 0;
+  transform: scale(0.98);
+  transition: opacity 0.18s ease, transform 0.18s ease;
+}
+
+.quote-box.fade-in {
+  opacity: 1;
+  transform: scale(1);
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.quote-mark {
+  font-size: 5rem;
+  line-height: 0.5;
+  color: var(--red);
+  font-family: 'Georgia', serif;
+  font-weight: bold;
+  opacity: 0.4;
+  user-select: none;
+}
+
+.quote-mark.close {
+  text-align: right;
+  line-height: 1;
+  margin-top: 8px;
+}
+
+.quote-text {
+  font-size: clamp(1rem, 2.5vw, 1.25rem);
+  line-height: 1.75;
+  color: var(--text);
+  font-style: italic;
+  text-align: center;
+  padding: 12px 0;
+  min-height: 80px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ── BUTTONS ── */
+.generate-btn {
+  background: linear-gradient(180deg, var(--red) 0%, var(--dark-red) 100%);
+  color: white;
+  border: 3px solid var(--bright-gold);
+  border-radius: 6px;
+  padding: 18px 36px;
+  font-size: clamp(0.9rem, 2.5vw, 1.1rem);
+  font-weight: 900;
+  font-family: 'Arial Black', 'Impact', sans-serif;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  box-shadow:
+    0 4px 16px rgba(178, 34, 52, 0.5),
+    0 0 0 1px rgba(255, 215, 0, 0.3);
+  width: 100%;
+  max-width: 500px;
+}
+
+.generate-btn:hover {
+  background: linear-gradient(180deg, #cc2233 0%, #9b0000 100%);
+  box-shadow:
+    0 6px 24px rgba(178, 34, 52, 0.7),
+    0 0 20px rgba(255, 215, 0, 0.3);
+  transform: translateY(-1px);
+}
+
+.generate-btn:active {
+  transform: translateY(1px);
+  box-shadow: 0 2px 8px rgba(178, 34, 52, 0.4);
+}
+
+.generate-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.share-btn {
+  background: transparent;
+  border: 1px solid var(--gold);
+  color: var(--gold);
+  border-radius: 4px;
+  padding: 8px 20px;
+  font-size: 0.85rem;
+  cursor: pointer;
+  font-family: Arial, sans-serif;
+  transition: all 0.15s ease;
+  margin-top: -16px;
+}
+
+.share-btn:hover {
+  background: rgba(201, 168, 76, 0.15);
+}
+
+.copied-msg {
+  color: var(--gold);
+  font-size: 0.8rem;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  font-family: Arial, sans-serif;
+  margin-top: -20px;
+}
+
+.copied-msg.show {
+  opacity: 1;
+}
+
+/* ── FOOTER ── */
+footer {
+  text-align: center;
+  width: 100%;
+  padding: 20px;
+}
+
+.disclaimer {
+  font-size: 0.78rem;
+  color: rgba(255,255,255,0.4);
+  font-family: Arial, sans-serif;
+  line-height: 1.5;
+  margin-bottom: 10px;
+}
+
+.disclaimer strong {
+  color: rgba(255,255,255,0.6);
+}
+
+.credit {
+  font-size: 0.75rem;
+  color: rgba(255,255,255,0.25);
+  font-family: Arial, sans-serif;
+}
+
+.credit a {
+  color: rgba(201, 168, 76, 0.5);
+  text-decoration: none;
+}
+
+.credit a:hover {
+  color: var(--gold);
+}
+
+/* ── MOBILE ── */
+@media (max-width: 480px) {
+  .quote-box {
+    padding: 28px 24px;
+  }
+  .quote-mark {
+    font-size: 3.5rem;
+  }
+  .generate-btn {
+    padding: 16px 20px;
+  }
+}

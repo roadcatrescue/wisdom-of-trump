@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Trump Oracle — Tremendous Wisdom for the Ages</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="page">
+
+    <header>
+      <div class="eagle">🦅</div>
+      <h1>TRUMP ORACLE</h1>
+      <p class="tagline">Tremendous Wisdom for the Ages</p>
+      <p class="sub-tagline">
+        &ldquo;I have the best words. The best. Nobody has better words than me.&rdquo;
+      </p>
+    </header>
+
+    <main>
+      <div class="quote-box" id="quoteBox" aria-live="polite">
+        <div class="quote-mark">&ldquo;</div>
+        <p class="quote-text" id="quoteText">
+          Press the button below to receive a tremendous insight from a very stable genius.
+        </p>
+        <div class="quote-mark close">&rdquo;</div>
+      </div>
+
+      <button class="generate-btn" id="generateBtn" onclick="newQuote()">
+        🇺🇸 GENERATE TREMENDOUS WISDOM 🇺🇸
+      </button>
+
+      <button class="share-btn" id="shareBtn" onclick="copyQuote()" title="Copy to clipboard">
+        📋 Copy Quote
+      </button>
+      <span class="copied-msg" id="copiedMsg">Copied!</span>
+    </main>
+
+    <footer>
+      <p class="disclaimer">
+        <strong>Satire.</strong> This site generates fictional parody quotes for comedic purposes.
+        All quotes are computer-generated nonsense. Any resemblance to actual speeches is
+        purely because the real ones already sound like this.
+      </p>
+      <p class="credit">
+        Inspired by <a href="https://wisdomofpeterson.com" target="_blank" rel="noopener">wisdomofpeterson.com</a>
+        and the late, great <a href="https://wisdomofchopra.com" target="_blank" rel="noopener">wisdomofchopra.com</a>.
+      </p>
+    </footer>
+  </div>
+
+  <script src="trump.js"></script>
+  <script>
+    function newQuote() {
+      const el = document.getElementById("quoteText");
+      const box = document.getElementById("quoteBox");
+      const btn = document.getElementById("generateBtn");
+
+      // Animate out
+      box.classList.add("fade-out");
+      btn.disabled = true;
+
+      setTimeout(() => {
+        el.textContent = generateQuote();
+        box.classList.remove("fade-out");
+        box.classList.add("fade-in");
+        btn.disabled = false;
+        setTimeout(() => box.classList.remove("fade-in"), 400);
+      }, 200);
+    }
+
+    function copyQuote() {
+      const text = document.getElementById("quoteText").textContent;
+      navigator.clipboard.writeText('"' + text + '" — Trump Oracle').then(() => {
+        const msg = document.getElementById("copiedMsg");
+        msg.classList.add("show");
+        setTimeout(() => msg.classList.remove("show"), 2000);
+      });
+    }
+
+    // Generate one on load
+    document.addEventListener("DOMContentLoaded", newQuote);
+  </script>
+</body>
+</html>
