@@ -123,6 +123,9 @@ h1 {
   border-radius: 8px;
   padding: 18px 28px;
   position: relative;
+  z-index: 1;              /* Safari: sit above canvas compositing layer */
+  -webkit-transform: translateZ(0); /* force own compositing layer in Safari */
+  transform: translateZ(0);
   box-shadow:
     0 0 0 1px rgba(201, 168, 76, 0.3),
     0 8px 40px rgba(0,0,0,0.5);
