@@ -99,63 +99,84 @@ h1 {
   line-height: 1.5;
 }
 
-/* ── QUOTE BOX ── */
-.quote-box {
+/* ── ORACLE ROW (Trump + speech bubble) ── */
+.oracle-row {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  width: 100%;
+  gap: 0;
+}
+
+.trump-dance {
+  width: 138px;
+  height: 168px;
+  flex-shrink: 0;
+  display: block;
+  position: relative;
+  z-index: 1;
+  /* nudge right edge behind bubble border */
+  margin-right: -3px;
+}
+
+/* ── SPEECH BUBBLE ── */
+.speech-bubble {
+  flex: 1;
   background: var(--cream);
   border: 3px solid var(--gold);
-  border-radius: 6px;
-  padding: 28px 40px;
-  width: 100%;
+  border-radius: 8px;
+  padding: 18px 28px;
   position: relative;
   box-shadow:
     0 0 0 1px rgba(201, 168, 76, 0.3),
     0 8px 40px rgba(0,0,0,0.5);
-  min-height: 144px;
   display: flex;
-  flex-direction: column;
-  justify-content: center;
+  align-items: center;
+  min-height: 100px;
   transition: opacity 0.2s ease;
 }
 
-.quote-box.fade-out {
+/* Bubble tail — border layer */
+.speech-bubble::before {
+  content: '';
+  position: absolute;
+  right: 100%;
+  top: 36%;
+  transform: translateY(-50%);
+  border: 14px solid transparent;
+  border-right: 20px solid var(--gold);
+}
+
+/* Bubble tail — fill layer */
+.speech-bubble::after {
+  content: '';
+  position: absolute;
+  right: calc(100% - 3px);
+  top: 36%;
+  transform: translateY(-50%);
+  border: 12px solid transparent;
+  border-right: 18px solid var(--cream);
+}
+
+.speech-bubble.fade-out {
   opacity: 0;
   transform: scale(0.98);
   transition: opacity 0.18s ease, transform 0.18s ease;
 }
 
-.quote-box.fade-in {
+.speech-bubble.fade-in {
   opacity: 1;
   transform: scale(1);
   transition: opacity 0.3s ease, transform 0.3s ease;
 }
 
-.quote-mark {
-  font-size: 5rem;
-  line-height: 0.5;
-  color: var(--red);
-  font-family: 'Georgia', serif;
-  font-weight: bold;
-  opacity: 0.4;
-  user-select: none;
-}
-
-.quote-mark.close {
-  text-align: right;
-  line-height: 1;
-  margin-top: 8px;
-}
-
 .quote-text {
-  font-size: clamp(1rem, 2.5vw, 1.25rem);
+  font-size: clamp(0.95rem, 2.4vw, 1.2rem);
   line-height: 1.65;
   color: var(--text);
   font-style: italic;
   text-align: center;
-  padding: 8px 0;
-  min-height: 64px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  width: 100%;
 }
 
 /* ── BUTTONS ── */
@@ -263,12 +284,37 @@ footer {
 }
 
 /* ── MOBILE ── */
-@media (max-width: 480px) {
-  .quote-box {
-    padding: 28px 24px;
+@media (max-width: 520px) {
+  .oracle-row {
+    flex-direction: column;
+    align-items: center;
   }
-  .quote-mark {
-    font-size: 3.5rem;
+  .trump-dance {
+    width: 110px;
+    height: 134px;
+    margin-right: 0;
+    margin-bottom: -3px;
+  }
+  /* tail points up on mobile */
+  .speech-bubble::before {
+    right: auto;
+    left: 50%;
+    top: auto;
+    bottom: 100%;
+    transform: translateX(-50%);
+    border: 14px solid transparent;
+    border-right: 14px solid transparent;
+    border-bottom: 20px solid var(--gold);
+  }
+  .speech-bubble::after {
+    right: auto;
+    left: 50%;
+    top: auto;
+    bottom: calc(100% - 3px);
+    transform: translateX(-50%);
+    border: 12px solid transparent;
+    border-right: 12px solid transparent;
+    border-bottom: 18px solid var(--cream);
   }
   .generate-btn {
     padding: 16px 20px;
