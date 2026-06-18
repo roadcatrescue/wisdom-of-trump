@@ -19,7 +19,7 @@
 
     <main>
       <div class="oracle-row">
-        <canvas id="danceCanvas" class="trump-dance" width="420" height="490"></canvas>
+        <canvas id="danceCanvas" class="trump-dance" width="140" height="170"></canvas>
         <div class="speech-bubble" id="quoteBox" aria-live="polite">
           <p class="quote-text" id="quoteText">
             Press the button below to receive a tremendous insight from a very stable genius.
@@ -110,7 +110,9 @@
     }
 
     function draw(){
-      ctx.clearRect(0,0,420,490);
+      ctx.clearRect(0,0,140,170);
+      ctx.save();
+      ctx.scale(140/420, 170/490); // draw in 420×490 space, display at 140×170
       const bob=Math.sin(frame*.14)*8;
       const lean=Math.sin(frame*.07)*5;
       const cy=CY+bob, cx=CX+lean;
@@ -226,6 +228,7 @@
       ctx.fillStyle='#a05848';
       ctx.beginPath();ctx.ellipse(cx,mY+mH+5,mW-4,9,0,0,Math.PI);ctx.fill();
       ctx.restore();
+      ctx.restore(); // end scale
     }
 
     function animate(){
