@@ -295,9 +295,37 @@ const closers = [
   "Total disaster.",
 ];
 
+// ── WEIGHTED POOL & NO-REPEAT BUFFER ────────────────────────────────────────
+// Self-aggrandizement (indices 0–12), enemy attacks (17–27), and
+// fake statistics (35–41) each get 2× weight in the draw pool.
+const _boostedIndices = new Set([
+  ...Array.from({length: 13}, (_, i) => i),       // self-aggrandizement: 0–12
+  ...Array.from({length: 11}, (_, i) => i + 17),  // enemy attacks: 17–27
+  ...Array.from({length: 7},  (_, i) => i + 35),  // fake statistics: 35–41
+]);
+
+const _weightedPool = [];
+templates.forEach((_, i) => {
+  _weightedPool.push(i);
+  if (_boostedIndices.has(i)) _weightedPool.push(i); // add second time for 2× weight
+});
+
+const _recentIndices = [];
+const _RECENT_LIMIT = 5;
+
 function generateQuote() {
-  const template = pick(templates);
-  const text = fill(template);
+  // Exclude recently used template indices from the draw pool
+  const available = _weightedPool.filter(i => !_recentIndices.includes(i));
+  const pool = available.length > 0 ? available : _weightedPool; // fallback if buffer is huge
+  const idx = pool[Math.floor(Math.random() * pool.length)];
+
+  // Update no-repeat buffer
+  if (!_recentIndices.includes(idx)) {
+    _recentIndices.push(idx);
+    if (_recentIndices.length > _RECENT_LIMIT) _recentIndices.shift();
+  }
+
+  const text = fill(templates[idx]);
   const closer = Math.random() > 0.35 ? " " + pick(closers) : "";
   return text + closer;
 }
