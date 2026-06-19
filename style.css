@@ -229,7 +229,7 @@ h1 {
   font-family: Arial, sans-serif;
   transition: all 0.15s ease;
   display: block;
-  margin: -12px auto 0;
+  margin: 6px auto 0;
 }
 
 .share-btn:hover {
