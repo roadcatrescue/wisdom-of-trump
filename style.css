@@ -228,7 +228,8 @@ h1 {
   cursor: pointer;
   font-family: Arial, sans-serif;
   transition: all 0.15s ease;
-  margin-top: -16px;
+  display: block;
+  margin: -12px auto 0;
 }
 
 .share-btn:hover {
@@ -241,7 +242,9 @@ h1 {
   opacity: 0;
   transition: opacity 0.2s ease;
   font-family: Arial, sans-serif;
-  margin-top: -20px;
+  text-align: center;
+  display: block;
+  margin-top: -16px;
 }
 
 .copied-msg.show {
