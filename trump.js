@@ -230,6 +230,40 @@ const templates = [
   "You know what that is? That's called {topic}. And we're going to win at it.",
   "Nobody can do that like me. Nobody. The generals, the best generals, they come to me. I do what they can't.",
   "I guarantee you — and you can mark my words, there's a lot of tape running — {enemy} will fail. I guarantee it.",
+
+  // ── Extra bragging (91–96) ──
+  "I got more votes than any Republican in history. More than Reagan. Far more than Bush. They don't want to talk about those numbers.",
+  "I built the greatest economy in the history of the world. The greatest. And then they crashed it on purpose.",
+  "My first term was, without question, the most successful term of any president. You can look it up. It's right there.",
+  "I've been right about everything. China, the economy, the border. Everything. Ninety-nine percent. Maybe a hundred.",
+  "World leaders call me directly. Not through staff — directly. And they say, 'Sir, we've never dealt with anyone like you.'",
+  "I did more in four years than most presidents do in eight. The most. And they hated me for it. They still do.",
+
+  // ── Election fraud (97–108) ──
+  "The 2020 election was stolen. Rigged. Absolutely fraudulent. Millions and millions of fake ballots, all for them.",
+  "Dead people voted in Pennsylvania. Thousands of them. You can check. Nobody checks, but you could. Very easily.",
+  "They stopped counting at 11 o'clock at night. You know why? Because they needed to figure out how many ballots to manufacture. Simple. Very simple.",
+  "Dominion Voting Systems changed votes in real time. It's been proven. Many, many people have proven it. The machines were rigged.",
+  "I won Georgia. I won Pennsylvania. I won Michigan, Wisconsin, Arizona. All of them. The real numbers show it. Everyone knows it.",
+  "We had 75 million votes — maybe more — and they still had to cheat. You can't beat those numbers honestly. You can't do it.",
+  "The voting machines were not certified. Connected to the internet. Illegally flipping results in real time. I saw the data.",
+  "Hundreds of thousands of illegal votes — at minimum — were counted in Detroit alone. Massive numbers. Nobody will look.",
+  "The election was rigged by {enemy}. Coordinated. Organized. They even bragged about it in Time magazine. Time magazine!",
+  "Ballot mules. Thousands of them. Caught on camera dropping hundreds of ballots into drop boxes. Illegal. All illegal.",
+  "They cheated in 2020. They cheated in 2022. That's all they know how to do. Without cheating, they lose every time.",
+  "The fake news will never cover the real election fraud because they're part of it. They're partners in the crime.",
+
+  // ── Hillary & Biden blame (109–118) ──
+  "Crooked Hillary paid for the fake dossier. She paid for it with campaign funds. And they went after me. Me! Unbelievable.",
+  "Hillary deleted 33,000 emails. Thirty-three thousand! If I did that, electric chair. But Crooked Hillary? Nothing. Nothing at all.",
+  "Biden destroyed the economy. Biden destroyed the border. Biden destroyed Afghanistan. Forty-seven years of nothing but failure.",
+  "It all traces back to Hillary. The Russia hoax, the fake dossier, Comey, the whole witch hunt. Hillary Clinton started all of it.",
+  "Biden took {bigNumbers} from {countries}. The laptop proved it. The laptop from hell. And the fake news buried it. Totally buried it.",
+  "Hillary Clinton should be in prison right now. She knows what she did. The FBI knows. The DOJ knows. Nobody does anything. Sad.",
+  "Obama was running the whole operation. Biden knew. Hillary knew. They all knew they were spying on my campaign. All of them.",
+  "Biden never made a good deal in his life. Forty-seven years in Washington. Forty-seven years of failure. Not one good deal. Not one.",
+  "Everything wrong with this country — the inflation, the crime, the open border — it all goes back to Biden. All of it. Biden.",
+  "They blame me for things that Biden did, things Hillary did, things Obama did. And the fake news just lets them do it.",
 ];
 
 // ── ENGINE ───────────────────────────────────────────────────────────────────
@@ -296,18 +330,25 @@ const closers = [
 ];
 
 // ── WEIGHTED POOL & NO-REPEAT BUFFER ────────────────────────────────────────
-// Self-aggrandizement (indices 0–12), enemy attacks (17–27), and
-// fake statistics (35–41) each get 2× weight in the draw pool.
-const _boostedIndices = new Set([
+// Weight map: 1 = normal, 2 = boosted (2×), 3 = high-priority (3×)
+const _weightMap = new Map();
+// 2× — self-aggrandizement, enemy attacks, fake statistics, extra bragging
+[
   ...Array.from({length: 13}, (_, i) => i),       // self-aggrandizement: 0–12
   ...Array.from({length: 11}, (_, i) => i + 17),  // enemy attacks: 17–27
   ...Array.from({length: 7},  (_, i) => i + 35),  // fake statistics: 35–41
-]);
+  ...Array.from({length: 6},  (_, i) => i + 91),  // extra bragging: 91–96
+].forEach(i => _weightMap.set(i, 2));
+// 3× — election fraud and Hillary/Biden blame (per user request)
+[
+  ...Array.from({length: 12}, (_, i) => i + 97),  // election fraud: 97–108
+  ...Array.from({length: 10}, (_, i) => i + 109), // Hillary/Biden blame: 109–118
+].forEach(i => _weightMap.set(i, 3));
 
 const _weightedPool = [];
 templates.forEach((_, i) => {
-  _weightedPool.push(i);
-  if (_boostedIndices.has(i)) _weightedPool.push(i); // add second time for 2× weight
+  const weight = _weightMap.get(i) || 1;
+  for (let w = 0; w < weight; w++) _weightedPool.push(i);
 });
 
 const _recentIndices = [];
