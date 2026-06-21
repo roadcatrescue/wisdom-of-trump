@@ -46,7 +46,7 @@ body {
 /* ── HEADER ── */
 header {
   text-align: center;
-  padding: 24px 20px 20px;
+  padding: 18px 20px 14px;
   border: 3px solid var(--gold);
   border-radius: 8px;
   background: linear-gradient(160deg, var(--blue) 0%, #1a1940 100%);
@@ -78,7 +78,7 @@ h1 {
     2px 2px 0 var(--dark-red),
     4px 4px 0 rgba(0,0,0,0.4);
   font-family: 'Arial Black', 'Impact', sans-serif;
-  margin-bottom: 8px;
+  margin-bottom: 4px;
 }
 
 .tagline {
