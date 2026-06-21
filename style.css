@@ -44,32 +44,15 @@ body {
 }
 
 /* ── HEADER ── */
-.header-shell {
-  width: 100%;
-  filter:
-    drop-shadow(0 0 4px var(--gold))
-    drop-shadow(0 0 14px rgba(0,0,0,0.55));
-}
-
 header {
   text-align: center;
-  padding: 42px 20px 22px;
-  min-height: 130px;
+  padding: 18px 20px 14px;
+  border: 3px solid var(--gold);
+  border-radius: 8px;
   background: linear-gradient(160deg, var(--blue) 0%, #1a1940 100%);
   width: 100%;
   position: relative;
-  /* White House silhouette:
-     wings (0-22%, 78-100%) rise to 45% from top;
-     shoulders (22-37%, 63-78%) rise to 24%;
-     pediment triangle peaks at 3% center. */
-  clip-path: polygon(
-    0% 100%, 100% 100%,
-    100% 45%,
-    78% 45%, 78% 24%,
-    63% 24%, 50% 3%,
-    37% 24%, 22% 24%,
-    22% 45%, 0% 45%
-  );
+  overflow: hidden;
 }
 
 header::before {
