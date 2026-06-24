@@ -104,6 +104,25 @@ const bigNumbers = [
   "more than $500 billion a year", "tremendous — truly tremendous — amounts"
 ];
 
+const twoWeeks = [
+  "the most beautiful healthcare plan you've ever seen",
+  "a full, complete infrastructure plan — roads, bridges, everything",
+  "the peace deal in the Middle East, and it's going to be incredible",
+  "overwhelming evidence of massive election fraud",
+  "indictments — big ones, very big",
+  "the declassified documents that will change everything",
+  "a replacement for Obamacare — total perfection",
+  "the full audit results — and they are stunning",
+  "a trade deal with China better than anything you've ever seen",
+  "the cure — we're very close, frankly, very close",
+  "the military's plan to defeat our enemies completely",
+  "my official announcement — it's going to be historic",
+  "the report — and let me tell you, it is incredible",
+  "the border wall completion update — beautiful numbers",
+  "a tax plan that will make everyone in this room very rich",
+  "proof of what they did — and people are going to be shocked",
+];
+
 const sirNames = [
   "one of the top generals — one of the best",
   "a very tough police officer, big strong guy",
@@ -225,6 +244,20 @@ const templates = [
   "Radical Islamic Terrorism must be stopped by whatever means necessary! Have to be tough!",
   "Such a great honor to be with {group} today. The love in the room was incredible. Tears. Big strong people with tears.",
 
+  // ── Two Weeks™ promises ──
+  "In about two weeks, we're going to be announcing {twoWeeks}. Two weeks. Watch.",
+  "I'm going to be showing you {twoWeeks} in about two weeks. Big announcement. Huge.",
+  "We're very close — two weeks, maybe less — to releasing {twoWeeks}. Very close.",
+  "Two weeks. I've said this before. But this time — two weeks — {twoWeeks}. It's ready.",
+  "I told my people: two weeks. We're releasing {twoWeeks} in two weeks. It's done. Almost.",
+  "They've been asking about {twoWeeks} for years. Two weeks. Two weeks, you're going to see it.",
+  "We're doing {twoWeeks} — and it's {superlative} — in about two weeks. Maybe less. Maybe sooner.",
+  "In two weeks, the world will know about {twoWeeks}. They're not going to believe it. Nobody will.",
+  "Two weeks. I keep saying two weeks. And people ask, 'When, sir?' Two weeks. Very, very soon.",
+  "We have {twoWeeks} — fully ready, fully prepared — and in about two weeks we'll be unveiling it. Beautiful.",
+  "I've been working on {twoWeeks} for a long time. A very long time. Two weeks, it all comes out. Everything.",
+  "They say it'll never happen. They've been saying that for years. Two weeks. {twoWeeks}. Two weeks. Mark it down.",
+
   // ── Closing zingers ──
   "Our politicians are stupid. {enemy} is stupid. Frankly, many of them are very, very stupid. I'm not stupid.",
   "You know what that is? That's called {topic}. And we're going to win at it.",
@@ -285,6 +318,7 @@ function fill(template) {
     stats: pick(stats),
     bigNumbers: pick(bigNumbers),
     sirName: pick(sirNames),
+    twoWeeks: pick(twoWeeks),
   };
 
   return template.replace(/\{(\w+)\}/g, (_, k) => vars[k] || `[${k}]`);
@@ -339,10 +373,11 @@ const _weightMap = new Map();
   ...Array.from({length: 7},  (_, i) => i + 35),  // fake statistics: 35–41
   ...Array.from({length: 6},  (_, i) => i + 91),  // extra bragging: 91–96
 ].forEach(i => _weightMap.set(i, 2));
-// 3× — election fraud and Hillary/Biden blame (per user request)
+// 3× — election fraud, Hillary/Biden blame, and Two Weeks™ promises
 [
   ...Array.from({length: 12}, (_, i) => i + 97),  // election fraud: 97–108
   ...Array.from({length: 10}, (_, i) => i + 109), // Hillary/Biden blame: 109–118
+  ...Array.from({length: 12}, (_, i) => i + 119), // Two Weeks™ promises: 119–130
 ].forEach(i => _weightMap.set(i, 3));
 
 const _weightedPool = [];
