@@ -105,6 +105,7 @@ const bigNumbers = [
 ];
 
 const twoWeeks = [
+  // Plausible-ish political promises (always two weeks away)
   "the most beautiful healthcare plan you've ever seen",
   "a full, complete infrastructure plan — roads, bridges, everything",
   "the peace deal in the Middle East, and it's going to be incredible",
@@ -121,6 +122,24 @@ const twoWeeks = [
   "the border wall completion update — beautiful numbers",
   "a tax plan that will make everyone in this room very rich",
   "proof of what they did — and people are going to be shocked",
+
+  // Unhinged conspiracy-grade promises
+  "proof that top Democrats are actually pizza-eating aliens — we have the receipts",
+  "conclusive evidence that Epstein never existed — total fabrication, very interesting",
+  "the real birth certificate — not just Obama's, all of them, many of them",
+  "footage of Hillary Clinton shape-shifting — very disturbing, not for children",
+  "proof that the moon landing was faked by Democrats to distract from the border",
+  "documents showing Fauci personally invented every disease since 1987",
+  "the list of Deep State lizard people — it's longer than you think, much longer",
+  "evidence that windmills are actually Chinese spy antennas — been saying this for years",
+  "the full video of Obama ordering the hurricane — they know how to do it now",
+  "proof that George Soros controls the weather — the clouds, very specifically the clouds",
+  "documents showing the Democrats have been putting something in the salad dressing",
+  "proof that the fake news media is run by actual robots — not metaphor, literal robots",
+  "evidence that COVID was developed by a Venezuelan microwave — I've seen the plans",
+  "the declassified files proving JFK was shot by a very radical left wind",
+  "proof that the 2020 ballots were printed in a basement in Beijing by elves",
+  "documentation showing that Sleepy Joe is actually three Democrats in a trench coat",
 ];
 
 const sirNames = [
