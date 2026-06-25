@@ -110,7 +110,7 @@ h1 {
 
 .trump-dance {
   width: 140px;
-  height: 170px;
+  height: 274px;
   flex-shrink: 0;
   display: block;
 }
@@ -293,7 +293,7 @@ footer {
   }
   .trump-dance {
     width: 110px;
-    height: 134px;
+    height: 215px;
     margin-right: 0;
     margin-bottom: -3px;
   }
