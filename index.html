@@ -27,9 +27,12 @@
         </div>
       </div>
 
-      <button class="generate-btn" id="generateBtn" onclick="newQuote()">
-        🇺🇸 CLICK FOR TREMENDOUS WISDOM 🇺🇸
-      </button>
+      <div class="btn-wrap">
+        <button class="generate-btn" id="generateBtn" onclick="newQuote()">
+          🇺🇸 CLICK FOR TREMENDOUS WISDOM 🇺🇸
+        </button>
+        <span class="click-hint" id="clickHint" aria-hidden="true">👆</span>
+      </div>
 
       <button class="share-btn" id="shareBtn" onclick="copyQuote()" title="Copy to clipboard">
         📋 Copy Quote
@@ -249,6 +252,12 @@
 
       if (window.triggerCelebration) window.triggerCelebration();
 
+      // Hide the click hint after the first real user click
+      const hint = document.getElementById("clickHint");
+      if (hint && !hint.classList.contains("hide") && window.__userClicked) {
+        hint.classList.add("hide");
+      }
+
       box.classList.add("fade-out");
       btn.disabled = true;
 
@@ -271,8 +280,13 @@
       });
     }
 
-    // Generate one on load
+    // Generate one on load (does not count as a user click for the hint)
     document.addEventListener("DOMContentLoaded", newQuote);
+    document.getElementById("generateBtn").addEventListener("click", () => {
+      window.__userClicked = true;
+      const hint = document.getElementById("clickHint");
+      if (hint) hint.classList.add("hide");
+    });
   </script>
   <script data-name="BMC-Widget" data-cfasync="false" src="https://cdnjs.buymeacoffee.com/1.0.0/widget.prod.min.js" data-id="TristanBe" data-description="Support me on Buy me a coffee!" data-message="Thanks for helping me poke fun at the Orange Emperor" data-color="#40DCA5" data-position="Right" data-x_margin="18" data-y_margin="18"></script>
 </body>
