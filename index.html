@@ -23,6 +23,7 @@
           <p class="quote-text" id="quoteText">
             Press the button below to receive a tremendous insight from a very stable genius.
           </p>
+          <p class="fact-check" id="factCheck"></p>
         </div>
       </div>
 
@@ -253,6 +254,7 @@
 
       setTimeout(() => {
         el.textContent = generateQuote();
+        document.getElementById("factCheck").textContent = "\u2713 " + generateFactCheck();
         box.classList.remove("fade-out");
         box.classList.add("fade-in");
         btn.disabled = false;

@@ -142,6 +142,56 @@ const twoWeeks = [
   "documentation showing that Sleepy Joe is actually three Democrats in a trench coat",
 ];
 
+const nicheTopics = [
+  "competitive cheese rolling", "the mating habits of eels",
+  "14th-century Flemish tapestries", "the metric system — which I invented, in a way",
+  "photosynthesis", "whale echolocation", "elevator maintenance",
+  "Byzantine tax law", "the migratory patterns of the Canada goose",
+  "submarine door hinges", "ancient Roman concrete — better than ours, look it up",
+  "beekeeping", "the Dewey Decimal System", "crop rotation in the 1400s",
+  "velcro — both sides of it", "the deep ocean, deeper than anyone",
+  "Gregorian chants", "the small intestine", "Portuguese grammar",
+  "escalator etiquette", "the history of soup"
+];
+
+const absurdEnemies = [
+  "Low-Energy Gravity", "Crooked Photosynthesis", "Sleepy Tuesday",
+  "the Failing Moon", "Lyin' Daylight Savings Time", "Shifty Wind Chill",
+  "the Do-Nothing Tides", "Crazy Humidity", "the Radical Left Equator",
+  "Little Mercury — the planet, not the element, although also the element",
+  "the Corrupt Alphabet", "Sloppy Autumn", "the Overrated Pacific Ocean",
+  "Weak and Pathetic Tuesdays", "the Deep Sea State", "Crooked Long Division",
+  "the Fake News Weather", "Nervous Magnetism", "the Rigged Food Pyramid"
+];
+
+const impossibleCriers = [
+  "a statue of Lincoln — the actual statue, marble tears, nobody's ever seen that",
+  "my doctor — very tough guy, strongest doctor in medical history — cried for 45 minutes",
+  "a K-9 unit dog — German breed, tremendous jaw — saluted me. Dogs don't do that. This one did",
+  "the Liberty Bell — it rang on its own, first time since 1846",
+  "a bald eagle — landed right on my shoulder, very majestic, tears streaming",
+  "the toughest Navy SEAL — they don't have names, that's how tough — wept like a baby",
+  "a grown grizzly bear — big, beautiful animal — wept openly",
+  "an entire marching band — all of them, even the tuba, especially the tuba",
+  "Mount Rushmore itself — all four of them, and they were making room for a fifth",
+  "the Constitution — the actual document — they had to bring in special blotters"
+];
+
+const fakeUnits = [
+  "wall-miles, which are longer", "freedom units — the biggest units",
+  "rally-acres", "crowd-tons", "Trump Standard Percent, the most accurate percent",
+  "patriot-gallons", "MAGA-watts — real thing, look it up",
+  "very large numbers of units — the units themselves are classified"
+];
+
+const historicalFigures = [
+  "Abraham Lincoln", "George Washington", "Winston Churchill",
+  "Napoleon — short guy, but tremendous energy", "Julius Caesar",
+  "Alexander the Great — great, but not the greatest, we know who the greatest is",
+  "Teddy Roosevelt", "the Founding Fathers — all of them, even the quiet ones",
+  "Moses", "Leonardo da Vinci"
+];
+
 const sirNames = [
   "one of the top generals — one of the best",
   "a very tough police officer, big strong guy",
@@ -316,6 +366,61 @@ const templates = [
   "Biden never made a good deal in his life. Forty-seven years in Washington. Forty-seven years of failure. Not one good deal. Not one.",
   "Everything wrong with this country — the inflation, the crime, the open border — it all goes back to Biden. All of it. Biden.",
   "They blame me for things that Biden did, things Hillary did, things Obama did. And the fake news just lets them do it.",
+
+  // ── Escalating self-correction (119–125) ──
+  "We saved 50 billion dollars. Actually, 100 billion. Some people say a trillion. It was probably a trillion. It was a trillion.",
+  "I read the report — 300 pages. I read it in an hour. Forty minutes, actually. Frankly, I basically wrote it.",
+  "The crowd was 20,000 people. Thirty thousand. The fire marshal said a million but they won't report that. It was a million.",
+  "I know {topic} better than anyone. Better than the experts. I taught the experts. Many of them cried.",
+  "We built 400 miles of wall. Five hundred. In some places the wall builds itself now — we taught it how. Nobody talks about that.",
+  "I got a standing ovation for 10 minutes. Twenty minutes. It's still going on, actually. They're still standing. Right now.",
+  "I won that lawsuit. All the lawsuits. Even the ones I lost — legally speaking, those were wins. Ask anybody.",
+
+  // ── Impossible Sir Stories (126–128) ──
+  "I was at the memorial, very beautiful, and {impossibleCrier}. Tears! And everyone said, 'Sir, we've never seen anything like it.' And they haven't.",
+  "You won't believe this — the fake news won't cover it — but {impossibleCrier}, and said, 'Sir, thank you for what you've done for {topic}.' Incredible moment. Very moving.",
+  "Right after my speech, {impossibleCrier}. The Secret Service was very shaken. They see a lot. They'd never seen that.",
+
+  // ── Niche expertise (129–132) ──
+  "Nobody knows more about {nicheTopic} than me. Nobody. The experts call me — they call ME — and they ask questions.",
+  "I've studied {nicheTopic} my whole life. Longer, in some ways. People are shocked when I tell them what I know.",
+  "They gave me a briefing on {nicheTopic}. I corrected the briefing. The generals were amazed. They said, 'Sir, how do you know this?' It's just genetics.",
+  "Very few people understand {nicheTopic}. I understand it perfectly. I understood it as a baby. My uncle was at MIT — good genes, very good genes.",
+
+  // ── Physics-defying anecdotes (133–138) ──
+  "I once hit a golf ball so hard it landed the day before. The Secret Service confirmed it. They were very shaken.",
+  "I stared down a hurricane — Category 5, biggest ever — and it turned around. Went back to Africa. First time in history. Nobody thanks me.",
+  "I did a handshake so strong the other guy's watch stopped. A very expensive watch. He thanked me. People do.",
+  "When I walk into a room, the lights get brighter. Measurably. We measured it. The electricians couldn't explain it. I could, but I won't.",
+  "I once negotiated so hard the other side paid ME to keep their own money. Nobody's ever done that. The Treasury called. They were confused, frankly.",
+  "My IQ test broke the machine. The machine said 'error.' You know what error means in IQ language? Too high. Look it up.",
+
+  // ── Fake units (139–141) ──
+  "The wall is now 30 miles high in certain sections. In {fakeUnits}. The engineers didn't think it was possible. I showed them it was.",
+  "We're up 40 points. Maybe 40 degrees. Forty something — it's the biggest forty anyone's ever had. In {fakeUnits}.",
+  "We measured the crowd in {fakeUnits} because regular numbers couldn't handle it. That's just science. The good kind.",
+
+  // ── Two Weeks recursion (142–143) ──
+  "People ask, 'Sir, when is two weeks?' And I tell them: two weeks from now. It's always been two weeks from now. That's how time works. Nobody understands time like me.",
+  "Two weeks ago I said two weeks. That means we're right on schedule. Do the math — actually don't, I've done it for you. It's two weeks.",
+
+  // ── Absurd enemies (144–147) ──
+  "{absurdEnemy} has been very unfair to me. Very unfair. Everyone sees it. We're looking into it very strongly.",
+  "Nobody's been treated worse by {absurdEnemy} than me. Nobody in history. And I've handled it beautifully. Everyone says so.",
+  "{absurdEnemy} — totally rigged. Been rigged for years. We have the evidence. It's coming out in two weeks.",
+  "I'm hearing very bad things about {absurdEnemy}. Very bad. People are talking. Smart people. We'll see what happens.",
+
+  // ── Historical endorsements (148–151) ──
+  "{historicalFigure} — people say I'm better, I don't say it, they say it — would have endorsed me. He basically did, if you read between the lines. There aren't many lines. He was busy.",
+  "{historicalFigure} had many great qualities, but frankly, no wall experience. None. Zero. I have the most wall experience.",
+  "If {historicalFigure} were alive today, he'd be working for me. Probably in a very senior role. Not the top role. But senior.",
+  "Historians tell me — and these are the top historians, the best — that {historicalFigure} never had numbers like mine. Never even close. And he had very good numbers.",
+
+  // ── Rambling subject decay (152–155) ──
+  "We were talking about the border — and by the way, my uncle was a professor at MIT, very good genes — so when the windmills kill the birds, and they do, thousands of birds, you have to ask: who's paying for the birds? China. Nobody asks.",
+  "So I said to the general — great general, central casting — I said, what about {topic}? And he brings up sharks. Sharks! Which, by the way, I've always had a very complicated relationship with. Long story. Great story, actually. Not now.",
+  "Everyone's asking about {topic}, but nobody's asking the real question, which is: whatever happened to the incandescent lightbulb? I brought it back. You looked orange under the new ones. Not me. Other people.",
+  "They want to talk about the economy — fine, greatest economy ever, mine — but first, the escalator. People forget I came down an escalator. Best escalator moment in political history. Historians study it. The escalator people sent me a plaque.",
 ];
 
 // ── ENGINE ───────────────────────────────────────────────────────────────────
@@ -338,6 +443,11 @@ function fill(template) {
     bigNumbers: pick(bigNumbers),
     sirName: pick(sirNames),
     twoWeeks: pick(twoWeeks),
+    nicheTopic: pick(nicheTopics),
+    absurdEnemy: pick(absurdEnemies),
+    impossibleCrier: pick(impossibleCriers),
+    fakeUnits: pick(fakeUnits),
+    historicalFigure: pick(historicalFigures),
   };
 
   return template.replace(/\{(\w+)\}/g, (_, k) => vars[k] || `[${k}]`);
@@ -425,5 +535,29 @@ function generateQuote() {
   return text + closer;
 }
 
+// ── FACT-CHECK FOOTER ───────────────────────────────────────────────────────────
+
+const factChecks = [
+  "Rated: Mostly Tremendous by independent fact-checkers (my lawyers)",
+  "97% True (poll of one)",
+  "This statement has been verified by the same people who counted the crowd size",
+  "Fact-check: TRUE, according to a very reliable source (the speaker)",
+  "Verified by many people. Big people. You wouldn't know them.",
+  "Rating: Four Pinocchios, which is the most Pinocchios. The best Pinocchios.",
+  "Confirmed by anonymous sources who are also me",
+  "Accuracy rating: 100%, margin of error: 100%",
+  "Peer-reviewed by Don Jr.",
+  "Fact-checkers gave this a 'Pants on Fire,' which is a fashion statement",
+  "Independently verified by a gentleman at Mar-a-Lago (unnamed, very strong)",
+  "Rated TRUE by the Trump Standard Percent Institute",
+  "Sources: trust me",
+  "This claim is still being counted. Like Arizona.",
+  "Endorsed by the Liberty Bell (see earlier statement)",
+];
+
+function generateFactCheck() {
+  return pick(factChecks);
+}
+
 // Export for browser and Node
-if (typeof module !== "undefined") module.exports = { generateQuote };
+if (typeof module !== "undefined") module.exports = { generateQuote, generateFactCheck };

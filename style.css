@@ -178,6 +178,20 @@ h1 {
   width: 100%;
 }
 
+.fact-check {
+  margin-top: 0.7em;
+  font-size: clamp(0.7rem, 1.8vw, 0.82rem);
+  font-style: italic;
+  color: #8a7a55;
+  text-align: center;
+  width: 100%;
+  opacity: 0.85;
+}
+
+.fact-check:empty {
+  display: none;
+}
+
 /* ── BUTTONS ── */
 .generate-btn {
   background: linear-gradient(180deg, var(--red) 0%, var(--dark-red) 100%);
