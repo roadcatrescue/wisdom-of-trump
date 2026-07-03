@@ -492,22 +492,28 @@ const closers = [
   "Total disaster.",
 ];
 
-// ── WEIGHTED POOL & NO-REPEAT BUFFER ────────────────────────────────────────
+// ── WEIGHTED POOL & NO-REPEAT BUFFER ────────────────────────────────────────────────
 // Weight map: 1 = normal, 2 = boosted (2×), 3 = high-priority (3×)
+// Indices verified against actual array positions (2026-07-02).
 const _weightMap = new Map();
-// 2× — self-aggrandizement, enemy attacks, fake statistics, extra bragging
+const _range = (start, end) => Array.from({length: end - start + 1}, (_, i) => i + start);
+// 2× — self-aggrandizement, enemy attacks, fake statistics, extra bragging,
+//      niche expertise, rambling subject decay
 [
-  ...Array.from({length: 13}, (_, i) => i),       // self-aggrandizement: 0–12
-  ...Array.from({length: 11}, (_, i) => i + 17),  // enemy attacks: 17–27
-  ...Array.from({length: 7},  (_, i) => i + 35),  // fake statistics: 35–41
-  ...Array.from({length: 6},  (_, i) => i + 91),  // extra bragging: 91–96
+  ..._range(0, 12),    // self-aggrandizement
+  ..._range(17, 27),   // enemy attacks
+  ..._range(35, 41),   // fake statistics
+  ..._range(103, 108), // extra bragging
+  ..._range(141, 144), // niche expertise
+  ..._range(164, 167), // rambling subject decay
 ].forEach(i => _weightMap.set(i, 2));
-// 3× — election fraud, Hillary/Biden blame, and Two Weeks™ promises
+// 3× — Two Weeks™ promises, election fraud, Hillary/Biden blame
 [
-  ...Array.from({length: 12}, (_, i) => i + 97),  // election fraud: 97–108
-  ...Array.from({length: 10}, (_, i) => i + 109), // Hillary/Biden blame: 109–118
-  ...Array.from({length: 12}, (_, i) => i + 119), // Two Weeks™ promises: 119–130
+  ..._range(87, 98),   // Two Weeks™ promises
+  ..._range(109, 120), // election fraud
+  ..._range(121, 130), // Hillary/Biden blame
 ].forEach(i => _weightMap.set(i, 3));
+// 1× (default) — everything else, including impossible-sir stories (138–140)
 
 const _weightedPool = [];
 templates.forEach((_, i) => {
