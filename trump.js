@@ -504,8 +504,6 @@ const _range = (start, end) => Array.from({length: end - start + 1}, (_, i) => i
   ..._range(17, 27),   // enemy attacks
   ..._range(35, 41),   // fake statistics
   ..._range(103, 108), // extra bragging
-  ..._range(141, 144), // niche expertise
-  ..._range(164, 167), // rambling subject decay
 ].forEach(i => _weightMap.set(i, 2));
 // 3× — Two Weeks™ promises, election fraud, Hillary/Biden blame
 [
@@ -513,6 +511,14 @@ const _range = (start, end) => Array.from({length: end - start + 1}, (_, i) => i
   ..._range(109, 120), // election fraud
   ..._range(121, 130), // Hillary/Biden blame
 ].forEach(i => _weightMap.set(i, 3));
+// 6× — flagship absurdity: escalating self-corrections, niche expertise,
+//      fake units, rambling subject decay
+[
+  ..._range(131, 137), // escalating self-corrections
+  ..._range(141, 144), // niche expertise
+  ..._range(151, 153), // fake units
+  ..._range(164, 167), // rambling subject decay
+].forEach(i => _weightMap.set(i, 6));
 // 1× (default) — everything else, including impossible-sir stories (138–140)
 
 const _weightedPool = [];
