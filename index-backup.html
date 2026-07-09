@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Trump Oracle — Tremendous Wisdom for the Ages</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="page">
+
+    <header>
+      <h1>TRUMP ORACLE</h1>
+      <p class="sub-tagline">
+        &ldquo;I have the best words. The best. Nobody has better words than me.&rdquo;
+      </p>
+    </header>
+
+    <main>
+      <div class="oracle-row">
+        <canvas id="danceCanvas" class="trump-dance" width="140" height="170"></canvas>
+        <div class="speech-bubble" id="quoteBox" aria-live="polite">
+          <p class="quote-text" id="quoteText">
+            Press the button below to receive a tremendous insight from a very stable genius.
+          </p>
+          <p class="fact-check" id="factCheck"></p>
+        </div>
+      </div>
+
+      <button class="generate-btn" id="generateBtn" onclick="newQuote()">
+        CLICK FOR TREMENDOUS WISDOM
+      </button>
+
+      <button class="share-btn" id="shareBtn" onclick="copyQuote()" title="Copy to clipboard">
+        📋 Copy Quote
+      </button>
+      <span class="copied-msg" id="copiedMsg">Copied!</span>
+    </main>
+
+    <footer>
+      <p class="disclaimer">
+        <strong>Satire.</strong> This site generates fictional parody quotes for comedic purposes.
+        All quotes are computer-generated nonsense. Any resemblance to actual speeches is
+        purely because the real ones already sound like this.
+      </p>
+      <p class="credit">
+        Inspired by <a href="https://wisdomofpeterson.com" target="_blank" rel="noopener">wisdomofpeterson.com</a>
+        and the late, great <a href="https://wisdomofchopra.com" target="_blank" rel="noopener">wisdomofchopra.com</a>.
+      </p>
+    </footer>
+  </div>
+
+  <script src="trump.js"></script>
+  <script>
+  // ── Trump Dance (inline) ────────────────────────────────────────────────────
+  (function () {
+    const canvas = document.getElementById('danceCanvas');
+    const ctx    = canvas.getContext('2d');
+    const CX = 210, CY = 235;
+    let frame = 0;
+    const POSES = ['Y','M','C','A'];
+    let poseIdx = 0;
+    const POSE_FRAMES = 90;
+
+    // Celebration
+    let celebrating = false, celebFrame = 0;
+    const CELEB_DUR = 70;
+    window.triggerCelebration = () => { celebrating = true; celebFrame = 0; };
+
+    // Arm poses: elbows tucked, forearms gesticulate
+    const PA = {
+      Y: { la:{e:[-10,40],h:[-35,-30]}, ra:{e:[10,40],h:[35,-30]} },
+      M: { la:{e:[-8,38], h:[-20,-55]}, ra:{e:[8,38], h:[20,-55]} },
+      C: { la:{e:[-10,45],h:[-15,10]},  ra:{e:[5,35], h:[70,-10]} },
+      A: { la:{e:[-12,42],h:[-30,-65]}, ra:{e:[12,42],h:[30,-65]} },
+    };
+    const CELEB = { la:{e:[-18,12],h:[-55,-100]}, ra:{e:[18,12],h:[55,-100]} };
+
+    function eio(t){ return t<.5?2*t*t:-1+(4-2*t)*t; }
+    function lerp(a,b,t){ return a+(b-a)*t; }
+    function lp(a,b,t){ return [lerp(a[0],b[0],t),lerp(a[1],b[1],t)]; }
+
+    function getArms() {
+      const cur=PA[POSES[poseIdx]], nxt=PA[POSES[(poseIdx+1)%4]];
+      const raw=(frame%POSE_FRAMES)/POSE_FRAMES;
+      const pt = raw<.75?0:eio((raw-.75)/.25);
+      const base={
+        la:{e:lp(cur.la.e,nxt.la.e,pt),h:lp(cur.la.h,nxt.la.h,pt)},
+        ra:{e:lp(cur.ra.e,nxt.ra.e,pt),h:lp(cur.ra.h,nxt.ra.h,pt)},
+      };
+      if(!celebrating) return base;
+      const t=celebFrame/CELEB_DUR;
+      let ct = t<.3?eio(t/.3) : t<.7?1+Math.sin(celebFrame*.8)*.04 : 1-eio((t-.7)/.3);
+      ct=Math.max(0,Math.min(1.05,ct));
+      return {
+        la:{e:lp(base.la.e,CELEB.la.e,ct),h:lp(base.la.h,CELEB.la.h,ct)},
+        ra:{e:lp(base.ra.e,CELEB.ra.e,ct),h:lp(base.ra.h,CELEB.ra.h,ct)},
+      };
+    }
+
+    function oval(x,y,rx,ry,c,r=0){
+      ctx.save();ctx.fillStyle=c;
+      ctx.beginPath();ctx.ellipse(x,y,rx,ry,r,0,Math.PI*2);ctx.fill();ctx.restore();
+    }
+    function hand(x,y,c){
+      ctx.save();ctx.fillStyle=c;
+      ctx.beginPath();ctx.ellipse(x,y,13,10,.2,0,Math.PI*2);ctx.fill();
+      [-6,6].forEach(i=>{ctx.beginPath();ctx.ellipse(x+i,y-9,4,4,0,0,Math.PI*2);ctx.fill();});
+      ctx.restore();
+    }
+
+    function draw(){
+      ctx.clearRect(0,0,140,170);
+      ctx.save();
+      ctx.scale(140/420, 170/490); // draw in 420×490 space, display at 140×170
+      const bob=Math.sin(frame*.14)*8;
+      const lean=Math.sin(frame*.07)*5;
+      const cy=CY+bob, cx=CX+lean;
+
+      // Legs
+      const lr=Math.sin(frame*.08)*10;
+      ctx.save();ctx.strokeStyle='#1c2340';ctx.lineWidth=30;ctx.lineCap='round';
+      ctx.beginPath();ctx.moveTo(cx-22,cy+100);ctx.quadraticCurveTo(cx-28+lr*.5,cy+155,cx-24+lr,cy+195);ctx.stroke();
+      ctx.beginPath();ctx.moveTo(cx+22,cy+100);ctx.quadraticCurveTo(cx+28-lr*.5,cy+155,cx+24-lr,cy+195);ctx.stroke();
+      ctx.restore();
+      oval(cx-24+lr,cy+199,22,8,'#111');
+      oval(cx+24-lr,cy+199,22,8,'#111');
+
+      // Suit
+      ctx.save();
+      ctx.fillStyle='#1c2340';
+      ctx.beginPath();ctx.roundRect(cx-60,cy-28,120,132,7);ctx.fill();
+      ctx.fillStyle='#253060';
+      ctx.beginPath();ctx.moveTo(cx-60,cy-28);ctx.lineTo(cx-14,cy-28);ctx.lineTo(cx,cy+15);ctx.lineTo(cx-60,cy+45);ctx.closePath();ctx.fill();
+      ctx.beginPath();ctx.moveTo(cx+60,cy-28);ctx.lineTo(cx+14,cy-28);ctx.lineTo(cx,cy+15);ctx.lineTo(cx+60,cy+45);ctx.closePath();ctx.fill();
+      ctx.fillStyle='#efefef';
+      ctx.beginPath();ctx.moveTo(cx-11,cy-28);ctx.lineTo(cx+11,cy-28);ctx.lineTo(cx+7,cy+104);ctx.lineTo(cx-7,cy+104);ctx.fill();
+      ctx.restore();
+
+      // Tie
+      const ts=lean*.4+Math.sin(frame*.09)*4;
+      ctx.save();ctx.fillStyle='#cc0000';
+      ctx.beginPath();
+      ctx.moveTo(cx-9,cy-26);ctx.lineTo(cx+9,cy-26);
+      ctx.lineTo(cx+16+ts,cy+125);ctx.lineTo(cx+2+ts,cy+138);ctx.lineTo(cx-16+ts,cy+125);
+      ctx.closePath();ctx.fill();
+      ctx.save();ctx.globalAlpha=.3;ctx.strokeStyle='#ff5555';ctx.lineWidth=2;
+      ctx.beginPath();ctx.moveTo(cx+1,cy-18);ctx.lineTo(cx+10+ts*.6,cy+118);ctx.stroke();
+      ctx.restore();ctx.restore();
+
+      // Arms
+      const arms=getArms();
+      const LSX=cx-46,LSY=cy+5, RSX=cx+46,RSY=cy+5;
+      const LEX=LSX+arms.la.e[0],LEY=LSY+arms.la.e[1];
+      const LHX=LEX+arms.la.h[0],LHY=LEY+arms.la.h[1];
+      const REX=RSX+arms.ra.e[0],REY=RSY+arms.ra.e[1];
+      const RHX=REX+arms.ra.h[0],RHY=REY+arms.ra.h[1];
+      ctx.save();ctx.strokeStyle='#1c2340';ctx.lineWidth=26;ctx.lineCap='round';
+      ctx.beginPath();ctx.moveTo(LSX,LSY);ctx.lineTo(LEX,LEY);ctx.stroke();
+      ctx.beginPath();ctx.moveTo(RSX,RSY);ctx.lineTo(REX,REY);ctx.stroke();
+      ctx.lineWidth=22;
+      ctx.beginPath();ctx.moveTo(LEX,LEY);ctx.lineTo(LHX,LHY);ctx.stroke();
+      ctx.beginPath();ctx.moveTo(REX,REY);ctx.lineTo(RHX,RHY);ctx.stroke();
+      ctx.restore();
+      hand(LHX,LHY,'#F4A060');
+      hand(RHX,RHY,'#F4A060');
+
+      // Neck
+      ctx.fillStyle='#F4A060';ctx.fillRect(cx-17,cy-68,34,44);
+
+      // Face
+      oval(cx,cy-115,67,80,'#F4A060');
+      oval(cx-21,cy-122,19,13,'rgba(255,250,220,0.5)');
+      oval(cx+21,cy-122,19,13,'rgba(255,250,220,0.5)');
+
+      // Hair
+      ctx.save();
+      ctx.fillStyle='#D4B030';
+      ctx.beginPath();ctx.ellipse(cx+4,cy-186,64,30,-.05,0,Math.PI*2);ctx.fill();
+      ctx.fillStyle='#E8C840';
+      ctx.beginPath();ctx.ellipse(cx+8,cy-184,56,24,-.05,0,Math.PI*2);ctx.fill();
+      ctx.fillStyle='#D4B030';
+      ctx.beginPath();ctx.ellipse(cx+52,cy-158,20,44,.65,0,Math.PI*2);ctx.fill();
+      ctx.fillStyle='#E8C840';
+      ctx.beginPath();ctx.ellipse(cx+48,cy-158,14,36,.65,0,Math.PI*2);ctx.fill();
+      ctx.fillStyle='#D4B030';
+      ctx.beginPath();ctx.ellipse(cx-48,cy-148,22,46,-.55,0,Math.PI*2);ctx.fill();
+      ctx.restore();
+
+      // Eyebrows
+      ctx.save();ctx.strokeStyle='#7a5c20';ctx.lineWidth=5;ctx.lineCap='round';
+      ctx.beginPath();ctx.moveTo(cx-37,cy-134);ctx.lineTo(cx-9,cy-128);ctx.stroke();
+      ctx.beginPath();ctx.moveTo(cx+9,cy-128);ctx.lineTo(cx+37,cy-134);ctx.stroke();
+      ctx.restore();
+
+      // Eyes
+      oval(cx-22,cy-121,10,8,'#3a2818');
+      oval(cx+22,cy-121,10,8,'#3a2818');
+      oval(cx-21,cy-122,5,5,'#111');
+      oval(cx+21,cy-122,5,5,'#111');
+      oval(cx-19,cy-124,2,2,'white');
+      oval(cx+19,cy-124,2,2,'white');
+
+      // Nose
+      ctx.save();ctx.strokeStyle='#c87840';ctx.lineWidth=3;ctx.lineCap='round';
+      ctx.beginPath();ctx.moveTo(cx-2,cy-108);ctx.quadraticCurveTo(cx+13,cy-95,cx+9,cy-83);
+      ctx.quadraticCurveTo(cx,cy-79,cx-9,cy-83);ctx.stroke();ctx.restore();
+
+      // Mouth
+      const rawM=Math.sin(frame*.20);
+      const mOpen=rawM>0?Math.pow(rawM,.6):0;
+      const mW=28, mH=mOpen*30, mY=cy-70;
+      ctx.save();
+      ctx.fillStyle='#4a0808';
+      ctx.beginPath();ctx.ellipse(cx,mY+mH*.5,mW,Math.max(3,mH*.55+3),0,0,Math.PI*2);ctx.fill();
+      if(mOpen>.2){
+        ctx.fillStyle='#f0ece0';
+        ctx.beginPath();ctx.roundRect(cx-mW+4,mY-2,(mW-4)*2,Math.min(mH*.4,13),2);ctx.fill();
+        ctx.strokeStyle='#ddd8c8';ctx.lineWidth=1;
+        [-9,0,9].forEach(i=>{ctx.beginPath();ctx.moveTo(cx+i,mY-1);ctx.lineTo(cx+i,mY+Math.min(mH*.4,12));ctx.stroke();});
+      }
+      ctx.fillStyle='#b06858';
+      ctx.beginPath();
+      ctx.moveTo(cx-mW,mY);ctx.quadraticCurveTo(cx-10,mY-8,cx,mY-4);
+      ctx.quadraticCurveTo(cx+10,mY-8,cx+mW,mY);
+      ctx.lineTo(cx+mW-5,mY+5);ctx.quadraticCurveTo(cx,mY+3,cx-mW+5,mY+5);
+      ctx.closePath();ctx.fill();
+      ctx.fillStyle='#a05848';
+      ctx.beginPath();ctx.ellipse(cx,mY+mH+5,mW-4,9,0,0,Math.PI);ctx.fill();
+      ctx.restore();
+      ctx.restore(); // end scale
+    }
+
+    function animate(){
+      frame++;
+      if(frame%POSE_FRAMES===0) poseIdx=(poseIdx+1)%4;
+      if(celebrating){ celebFrame++; if(celebFrame>=CELEB_DUR) celebrating=false; }
+      draw();
+      requestAnimationFrame(animate);
+    }
+    animate();
+  })();
+  </script>
+  <script>
+    function newQuote() {
+      const el  = document.getElementById("quoteText");
+      const box = document.getElementById("quoteBox");
+      const btn = document.getElementById("generateBtn");
+
+      if (window.triggerCelebration) window.triggerCelebration();
+
+      box.classList.add("fade-out");
+      btn.disabled = true;
+
+      setTimeout(() => {
+        el.textContent = generateQuote();
+        document.getElementById("factCheck").textContent = "\u2713 " + generateFactCheck();
+        box.classList.remove("fade-out");
+        box.classList.add("fade-in");
+        btn.disabled = false;
+        setTimeout(() => box.classList.remove("fade-in"), 400);
+      }, 220);
+    }
+
+    function copyQuote() {
+      const text = document.getElementById("quoteText").textContent;
+      navigator.clipboard.writeText('"' + text + '" — Trump Oracle').then(() => {
+        const msg = document.getElementById("copiedMsg");
+        msg.classList.add("show");
+        setTimeout(() => msg.classList.remove("show"), 2000);
+      });
+    }
+
+    // Generate one on load
+    document.addEventListener("DOMContentLoaded", newQuote);
+  </script>
+  <script data-name="BMC-Widget" data-cfasync="false" src="https://cdnjs.buymeacoffee.com/1.0.0/widget.prod.min.js" data-id="TristanBe" data-description="Support me on Buy me a coffee!" data-message="Thanks for helping me poke fun at the Orange Emperor" data-color="#40DCA5" data-position="Right" data-x_margin="18" data-y_margin="18"></script>
+</body>
+</html>
