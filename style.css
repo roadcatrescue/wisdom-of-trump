@@ -289,11 +289,14 @@ main {
 /* ── ACTION ROW (Copy + Share) ── */
 .action-row {
   display: flex;
+  flex-direction: row;
   gap: 10px;
   justify-content: center;
   align-items: center;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   margin-top: -8px;
+  width: 100%;
+  max-width: 500px;
 }
 
 .copy-btn,
@@ -332,7 +335,7 @@ main {
 
 /* ── SHARE POPUP MENU ── */
 .share-menu {
-  display: none;
+  display: flex;
   flex-direction: column;
   gap: 6px;
   background: #1a1940;
@@ -342,10 +345,20 @@ main {
   min-width: 180px;
   box-shadow: 0 8px 32px rgba(0,0,0,0.6);
   margin-top: -4px;
+  /* Hidden by default — visibility approach works reliably in Safari */
+  visibility: hidden;
+  opacity: 0;
+  pointer-events: none;
+  max-height: 0;
+  overflow: hidden;
+  transition: opacity 0.15s ease, visibility 0.15s ease;
 }
 
 .share-menu.open {
-  display: flex;
+  visibility: visible;
+  opacity: 1;
+  pointer-events: auto;
+  max-height: 300px;
 }
 
 .share-platform {
