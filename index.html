@@ -52,10 +52,31 @@
         CLICK FOR TREMENDOUS WISDOM
       </button>
 
-      <button class="share-btn" id="shareBtn" onclick="copyQuote()" title="Copy to clipboard">
-        📋 Copy Quote
-      </button>
+      <div class="action-row">
+        <button class="copy-btn" id="copyBtn" onclick="copyQuote()" title="Copy quote + link to clipboard">
+          📋 Copy Quote
+        </button>
+        <button class="share-btn" id="shareBtn" onclick="toggleShareMenu()" title="Share this wisdom">
+          🔗 Share
+        </button>
+      </div>
       <span class="copied-msg" id="copiedMsg">Copied!</span>
+
+      <!-- Share popup -->
+      <div class="share-menu" id="shareMenu" aria-hidden="true">
+        <button class="share-platform" onclick="shareTo('twitter')">
+          <span class="platform-icon">𝕏</span> Twitter / X
+        </button>
+        <button class="share-platform" onclick="shareTo('facebook')">
+          <span class="platform-icon">f</span> Facebook
+        </button>
+        <button class="share-platform" onclick="shareTo('bluesky')">
+          <span class="platform-icon">🦋</span> Bluesky
+        </button>
+        <button class="share-platform" onclick="shareTo('reddit')">
+          <span class="platform-icon">👾</span> Reddit
+        </button>
+      </div>
     </main>
 
     <footer>
@@ -73,35 +94,110 @@
 
   <script src="trump.js"></script>
   <script>
+    // ── Quote URL encoding ──────────────────────────────────────────────
+    function quoteToUrl(text) {
+      return location.origin + location.pathname + '?q=' + encodeURIComponent(text);
+    }
+
+    function updateUrl(text) {
+      try {
+        history.replaceState(null, '', '?q=' + encodeURIComponent(text));
+      } catch(e) {}
+    }
+
+    function updateOgTags(text) {
+      const desc = '"' + text.slice(0, 200) + (text.length > 200 ? '…' : '') + '" — wisdomoftrump.com';
+      document.querySelector('meta[property="og:description"]').setAttribute('content', desc);
+      document.querySelector('meta[name="twitter:description"]').setAttribute('content', desc);
+      document.querySelector('meta[property="og:url"]').setAttribute('content', quoteToUrl(text));
+    }
+
+    // ── Quote generation ─────────────────────────────────────────────────
     function newQuote() {
       const el  = document.getElementById("quoteText");
       const box = document.getElementById("quoteBox");
       const btn = document.getElementById("generateBtn");
 
+      closeShareMenu();
       box.classList.add("fade-out");
       btn.disabled = true;
 
       setTimeout(() => {
-        el.textContent = generateQuote();
+        const quote = generateQuote();
+        el.textContent = quote;
         document.getElementById("factCheck").textContent = "\u2713 " + generateFactCheck();
         box.classList.remove("fade-out");
         box.classList.add("fade-in");
         btn.disabled = false;
         setTimeout(() => box.classList.remove("fade-in"), 400);
+        updateUrl(quote);
+        updateOgTags(quote);
       }, 220);
     }
 
     function copyQuote() {
       const text = document.getElementById("quoteText").textContent;
-      navigator.clipboard.writeText('"' + text + '" — Trump Oracle').then(() => {
+      const shareUrl = quoteToUrl(text);
+      const copyText = '"' + text + '"\n\n— wisdomoftrump.com\n' + shareUrl;
+      navigator.clipboard.writeText(copyText).then(() => {
         const msg = document.getElementById("copiedMsg");
         msg.classList.add("show");
         setTimeout(() => msg.classList.remove("show"), 2000);
       });
     }
 
-    // Generate one on load
-    document.addEventListener("DOMContentLoaded", newQuote);
+    // ── Share menu ────────────────────────────────────────────────────────
+    function toggleShareMenu() {
+      const menu = document.getElementById("shareMenu");
+      const open = menu.classList.toggle("open");
+      menu.setAttribute("aria-hidden", String(!open));
+    }
+
+    function closeShareMenu() {
+      const menu = document.getElementById("shareMenu");
+      menu.classList.remove("open");
+      menu.setAttribute("aria-hidden", "true");
+    }
+
+    function shareTo(platform) {
+      const text  = document.getElementById("quoteText").textContent;
+      const url   = quoteToUrl(text);
+      // Twitter allows 280 chars; leave ~25 for the URL
+      const twitterText = text.length > 250 ? text.slice(0, 247) + '…' : text;
+      const tweetBody   = encodeURIComponent('"' + twitterText + '"');
+      const bskyText    = encodeURIComponent('"' + (text.length > 250 ? text.slice(0, 247) + '…' : text) + '" ' + url);
+
+      const urls = {
+        twitter:  'https://twitter.com/intent/tweet?text=' + tweetBody + '&url=' + encodeURIComponent(url),
+        facebook: 'https://www.facebook.com/sharer/sharer.php?u=' + encodeURIComponent(url),
+        bluesky:  'https://bsky.app/intent/compose?text=' + bskyText,
+        reddit:   'https://www.reddit.com/submit?url=' + encodeURIComponent(url) + '&title=' + encodeURIComponent('"' + twitterText + '" — Trump Oracle'),
+      };
+
+      window.open(urls[platform], '_blank', 'noopener,noreferrer');
+      closeShareMenu();
+    }
+
+    // Close share menu on outside click
+    document.addEventListener('click', function(e) {
+      if (!e.target.closest('#shareMenu') && !e.target.closest('#shareBtn')) {
+        closeShareMenu();
+      }
+    });
+
+    // ── On load: decode ?q= param or generate fresh ───────────────────────
+    document.addEventListener("DOMContentLoaded", function() {
+      const params = new URLSearchParams(location.search);
+      const preset = params.get('q');
+      if (preset && preset.trim()) {
+        const el = document.getElementById("quoteText");
+        el.textContent = preset.trim();
+        document.getElementById("factCheck").textContent = "\u2713 " + generateFactCheck();
+        updateOgTags(preset.trim());
+      } else {
+        newQuote();
+      }
+    });
   </script>
   <script data-name="BMC-Widget" data-cfasync="false" src="https://cdnjs.buymeacoffee.com/1.0.0/widget.prod.min.js" data-id="TristanBe" data-description="Support me on Buy me a coffee!" data-message="Thanks for helping me poke fun at the Orange Emperor" data-color="#40DCA5" data-position="Right" data-x_margin="18" data-y_margin="18"></script>
 </body>

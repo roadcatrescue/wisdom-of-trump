@@ -286,6 +286,17 @@ main {
   transform: none;
 }
 
+/* ── ACTION ROW (Copy + Share) ── */
+.action-row {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+  margin-top: -8px;
+}
+
+.copy-btn,
 .share-btn {
   background: transparent;
   border: 1px solid var(--gold);
@@ -296,10 +307,10 @@ main {
   cursor: pointer;
   font-family: Arial, sans-serif;
   transition: all 0.15s ease;
-  display: block;
-  margin: -12px auto 0;
+  white-space: nowrap;
 }
 
+.copy-btn:hover,
 .share-btn:hover {
   background: rgba(201, 168, 76, 0.15);
 }
@@ -312,7 +323,58 @@ main {
   font-family: Arial, sans-serif;
   text-align: center;
   display: block;
-  margin-top: -16px;
+  margin-top: -8px;
+}
+
+.copied-msg.show {
+  opacity: 1;
+}
+
+/* ── SHARE POPUP MENU ── */
+.share-menu {
+  display: none;
+  flex-direction: column;
+  gap: 6px;
+  background: #1a1940;
+  border: 2px solid var(--gold);
+  border-radius: 8px;
+  padding: 10px;
+  min-width: 180px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.6);
+  margin-top: -4px;
+}
+
+.share-menu.open {
+  display: flex;
+}
+
+.share-platform {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: transparent;
+  border: 1px solid rgba(201, 168, 76, 0.3);
+  border-radius: 5px;
+  padding: 8px 14px;
+  color: var(--gold);
+  font-size: 0.88rem;
+  cursor: pointer;
+  font-family: Arial, sans-serif;
+  text-align: left;
+  transition: all 0.12s ease;
+  width: 100%;
+}
+
+.share-platform:hover {
+  background: rgba(201, 168, 76, 0.18);
+  border-color: var(--gold);
+}
+
+.platform-icon {
+  font-size: 1rem;
+  width: 20px;
+  text-align: center;
+  flex-shrink: 0;
 }
 
 .copied-msg.show {
